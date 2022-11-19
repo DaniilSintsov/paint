@@ -1,0 +1,14 @@
+.bar {
+  background-color: var(--bgc);
+  border-bottom: var(--border-weight) solid black;
+}
+
+.barContainer {
+  margin: 0 auto;
+  padding: var(--bar-indent);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--bar-indent);
+}
