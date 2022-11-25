@@ -16,8 +16,8 @@ export default class Circle extends Tool implements ICircle {
   startY: number | undefined
   mouseDown: boolean | undefined
 
-  constructor(canvas: HTMLCanvasElement) {
-    super(canvas)
+  constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
+    super(canvas, socket, id)
     this.listen()
   }
 
@@ -35,7 +35,8 @@ export default class Circle extends Tool implements ICircle {
 
   mouseMoveHandler(e: MouseEvent): void {
     if (this.mouseDown) {
-      const currentX: number = e.pageX - this.canvas.getBoundingClientRect().left
+      const currentX: number =
+        e.pageX - this.canvas.getBoundingClientRect().left
       const currentY: number = e.pageY - this.canvas.getBoundingClientRect().top
       if (this.startX && this.startY) {
         const width: number = currentX - this.startX

@@ -9,6 +9,8 @@ export interface ITool {
   fillStyle: string
   strokeStyle: string
   lineWidth: number
+  socket: WebSocket | undefined
+  id: string | undefined
   name: string | undefined
 }
 
@@ -16,8 +18,12 @@ export default class Tool implements ITool {
   name: string | undefined
   canvas: HTMLCanvasElement
   ctx: CanvasRenderingContext2D | null
+  socket: WebSocket | undefined
+  id: string | undefined
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
+    this.socket = socket
+    this.id = id
     this.canvas = canvas
     this.ctx = canvas.getContext('2d')
     this.destroyEvents()
@@ -53,12 +59,9 @@ export default class Tool implements ITool {
     this.canvas.onmousemove = null
   }
 
-  mouseDownHandler(e: MouseEvent): void {
-  }
+  mouseDownHandler(e: MouseEvent): void {}
 
-  mouseMoveHandler(e: MouseEvent): void {
-  }
+  mouseMoveHandler(e: MouseEvent): void {}
 
-  mouseUpHandler(e: MouseEvent): void {
-  }
+  mouseUpHandler(e: MouseEvent): void {}
 }

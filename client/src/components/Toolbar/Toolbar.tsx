@@ -17,7 +17,8 @@ import Rect from '../../services/tools/Rect/Rect'
 import Circle from '../../services/tools/Circle/Circle'
 import Eraser from '../../services/tools/Eraser/Eraser'
 import Line from '../../services/tools/Line/Line'
-import {DefaultColors, Tools} from '../../services/tools/Tool/Tool.types'
+import {Tools} from '../../services/tools/Tool/Tool.types'
+import {DefaultValues} from '../../types/DefaultValues.types'
 import {Storage} from '../../services/Storage/Storage.service'
 import {StorageKeys} from '../../services/Storage/Storage.types'
 
@@ -27,17 +28,23 @@ const Toolbar = () => {
   const barButtonHandler = useCallback(
     <T extends ITool>(Tool: Constructable<T>): void => {
       if (canvasState.canvas) {
-        const newTool: ITool = new Tool(canvasState.canvas)
+        const newTool: ITool = new Tool(
+          canvasState.canvas,
+          canvasState.socket,
+          canvasState.sessionId
+        )
         toolState.setTool(newTool)
-        const storage = new Storage()
         toolState.setFillStyle(
-          storage.get(StorageKeys.fillColor) || DefaultColors.black
+          Storage.get(StorageKeys.fillColor) || DefaultValues.colorBlack
+        )
+        toolState.setLineWidth(
+          Storage.get(StorageKeys.lineWidth) || DefaultValues.lineWidth
         )
         if (newTool.name === Tools.eraser) {
-          toolState.setStrokeStyle(DefaultColors.white)
+          toolState.setStrokeStyle(DefaultValues.colorWhite)
         } else {
           toolState.setStrokeStyle(
-            storage.get(StorageKeys.strokeColor) || DefaultColors.black
+            Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack
           )
         }
       }

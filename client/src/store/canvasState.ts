@@ -3,25 +3,47 @@ import {makeAutoObservable} from 'mobx'
 interface ICanvasState {
   canvas: HTMLCanvasElement | null
   setCanvas: (canvas: HTMLCanvasElement) => void
+  setUsername: (username: string) => void
   undoList: string[]
   redoList: string[]
+  username: string
+  socket: WebSocket | null
+  sessionId: string | null
   pushToUndo: (data: string) => void
   pushToRedo: (data: string) => void
   undo: () => void
   redo: () => void
+  setSocket: (socket: WebSocket) => void
+  setSessionId: (sessionId: string) => void
 }
 
 class CanvasState implements ICanvasState {
   canvas: HTMLCanvasElement | null = null
+  socket: WebSocket | null = null
+  sessionId: string | null = null
   redoList: string[] = []
   undoList: string[] = []
+
+  username = ''
 
   constructor() {
     makeAutoObservable(this)
   }
 
+  setSocket(socket: WebSocket): void {
+    this.socket = socket
+  }
+
+  setSessionId(sessionId: string): void {
+    this.sessionId = sessionId
+  }
+
   setCanvas(canvas: HTMLCanvasElement): void {
     this.canvas = canvas
+  }
+
+  setUsername(username: string) {
+    this.username = username
   }
 
   pushToRedo(data: string): void {

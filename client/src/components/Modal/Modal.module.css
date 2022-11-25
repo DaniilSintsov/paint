@@ -1,0 +1,52 @@
+.modal {
+  height: 100%;
+  width: 100%;
+  z-index: 40;
+  overflow-x: hidden;
+  position: fixed;
+  backdrop-filter: blur(3px);
+  top: 0;
+  left: 0;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modalContent {
+  padding: 20px;
+  max-width: 300px;
+  border: var(--border-weight) solid black;
+  background-color: var(--bgc);
+}
+
+.modalInput {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+  border: var(--border-weight) solid black;
+  margin-bottom: 20px;
+}
+
+.modalButton {
+  width: 100%;
+  padding: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  outline: none;
+  transition: 0.3s;
+  border: var(--border-weight) solid black;
+}
+
+.modalButton:hover {
+  background-color: white;
+  letter-spacing: 0.05em;
+}

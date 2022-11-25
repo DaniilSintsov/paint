@@ -16,8 +16,8 @@ export default class Line extends Tool implements ILine {
   saved: string | undefined
   mouseDown: boolean | undefined
 
-  constructor(canvas: HTMLCanvasElement) {
-    super(canvas)
+  constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
+    super(canvas, socket, id)
     this.listen()
   }
 
@@ -36,7 +36,10 @@ export default class Line extends Tool implements ILine {
 
   mouseMoveHandler(e: MouseEvent): void {
     if (this.mouseDown) {
-      this.draw(e.pageX - this.canvas.getBoundingClientRect().left, e.pageY - this.canvas.getBoundingClientRect().top)
+      this.draw(
+        e.pageX - this.canvas.getBoundingClientRect().left,
+        e.pageY - this.canvas.getBoundingClientRect().top
+      )
     }
   }
 

@@ -1,3 +1,7 @@
+export interface IExtWebSocket extends WebSocket {
+  id: string
+}
+
 export enum Tools {
   brush = 'brush',
   rect = 'rect',
@@ -7,7 +11,12 @@ export enum Tools {
   none = 'none'
 }
 
-export type Figure = IFigureNone | IFigureBrush | IFigureRect | IFigureEraser
+export enum MessageMethods {
+  connection = 'connection',
+  draw = 'draw'
+}
+
+type Figure = IFigureNone | IFigureBrush | IFigureRect | IFigureEraser
 
 interface IFigureNone {
   type: Tools.none
@@ -36,4 +45,18 @@ interface IFigureRect {
   height: number
   fillColor: string
   strokeColor: string
+}
+
+interface IMessageData {
+  id: string
+  username: string
+}
+
+export interface IMessageDataConnection extends IMessageData {
+  method: MessageMethods.connection
+}
+
+export interface IMessageDataDraw extends IMessageData {
+  method: MessageMethods.draw
+  figure: Figure
 }
