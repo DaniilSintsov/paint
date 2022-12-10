@@ -2,7 +2,7 @@ import React from 'react'
 import Canvas from './components/Canvas/Canvas'
 import SettingsBar from './components/SettingsBar/SettingsBar'
 import Toolbar from './components/Toolbar/Toolbar'
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 function App() {
   return (

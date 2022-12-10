@@ -1,7 +1,9 @@
 :root {
   --bar-indent: 10px;
-  --bgc: #f3f3f3;
+  --bgc: #fafafa;
   --deep-gray: #494949;
-  --bar-button-size: 35px;
-  --border-weight: 3px;
+  --bar-button-size: 30px;
+  --border-weight: 2px;
+  --border-color: #777;
+  --border-focus-color: #1a73e8;
 }

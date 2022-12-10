@@ -1,9 +1,9 @@
-import Tool, {ITool} from '../Tool/Tool'
-import {Tools} from '../Tool/Tool.types'
-import {DefaultValues} from '../../../types/DefaultValues.types'
-import {MessageMethods} from '../../../types/WebSocket.types'
-import {Storage} from '../../Storage/Storage.service'
-import {StorageKeys} from '../../Storage/Storage.types'
+import Tool, { ITool } from '../Tool/Tool'
+import { Tools } from '../Tool/Tool.types'
+import { DefaultValues } from '../../../types/DefaultValues.types'
+import { MessageMethods } from '../../../types/WebSocket.types'
+import { Storage } from '../../Storage/Storage.service'
+import { StorageKeys } from '../../Storage/Storage.types'
 
 interface IRect extends ITool {
   draw: (x: number, y: number, w: number, h: number) => void
@@ -42,7 +42,8 @@ export default class Rect extends Tool implements IRect {
           width: this.width,
           height: this.height,
           fillColor: this.ctx?.fillStyle,
-          strokeColor: this.ctx?.strokeStyle
+          strokeColor: this.ctx?.strokeStyle,
+          strokeWidth: this.ctx?.lineWidth
         }
       })
     )
@@ -91,10 +92,12 @@ export default class Rect extends Tool implements IRect {
     w: number,
     h: number,
     strokeColor: string,
-    fillColor: string
+    fillColor: string,
+    strokeWidth: number
   ): void {
     ctx.fillStyle = fillColor
     ctx.strokeStyle = strokeColor
+    ctx.lineWidth = strokeWidth
     ctx?.beginPath()
     ctx?.rect(x, y, w, h)
     ctx?.fill()
@@ -103,5 +106,7 @@ export default class Rect extends Tool implements IRect {
       Storage.get(StorageKeys.fillColor) || DefaultValues.colorBlack
     ctx.strokeStyle =
       Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack
+    ctx.lineWidth =
+      Storage.get(StorageKeys.lineWidth) || DefaultValues.lineWidth
   }
 }

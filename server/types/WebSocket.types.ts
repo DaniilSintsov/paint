@@ -16,7 +16,12 @@ export enum MessageMethods {
   draw = 'draw'
 }
 
-type Figure = IFigureNone | IFigureBrush | IFigureRect | IFigureEraser
+export type Figure =
+  | IFigureNone
+  | IFigureBrush
+  | IFigureRect
+  | IFigureEraser
+  | IFigureLine
 
 interface IFigureNone {
   type: Tools.none
@@ -45,6 +50,17 @@ interface IFigureRect {
   height: number
   fillColor: string
   strokeColor: string
+  strokeWidth: number
+}
+
+interface IFigureLine {
+  type: Tools.line
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  color: string
+  lineWidth: number
 }
 
 interface IMessageData {

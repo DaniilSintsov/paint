@@ -24,7 +24,7 @@
 .modalContent {
   padding: 20px;
   max-width: 300px;
-  border: var(--border-weight) solid black;
+  border: var(--border-weight) solid var(--border-color);
   background-color: var(--bgc);
 }
 
@@ -32,8 +32,12 @@
   width: 100%;
   padding: 10px;
   outline: none;
-  border: var(--border-weight) solid black;
+  border: var(--border-weight) solid var(--border-color);
   margin-bottom: 20px;
+}
+
+.modalInput:focus {
+  border: var(--border-weight) solid var(--border-focus-color);
 }
 
 .modalButton {
@@ -43,7 +47,7 @@
   font-weight: 600;
   outline: none;
   transition: 0.3s;
-  border: var(--border-weight) solid black;
+  border: var(--border-weight) solid var(--border-color);
 }
 
 .modalButton:hover {

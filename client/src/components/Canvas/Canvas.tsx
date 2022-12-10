@@ -1,21 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import React, {useEffect, useRef, useState} from 'react'
-import {jsx, css} from '@emotion/react'
-import {observer} from 'mobx-react-lite'
+import React, { useEffect, useRef, useState } from 'react'
+import { jsx, css } from '@emotion/react'
+import { observer } from 'mobx-react-lite'
 import Brush from '../../services/tools/Brush/Brush'
 import Rect from '../../services/tools/Rect/Rect'
 import canvasState from '../../store/canvasState'
 import toolState from '../../store/toolState'
 import Modal from '../Modal/Modal'
-import {useParams} from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
   IMessageDataConnection,
   IMessageDataDraw,
   MessageMethods
 } from '../../types/WebSocket.types'
-import {Tools} from '../../services/tools/Tool/Tool.types'
+import { Tools } from '../../services/tools/Tool/Tool.types'
 import Eraser from '../../services/tools/Eraser/Eraser'
+import Line from '../../services/tools/Line/Line'
 
 const Canvas = observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -76,7 +77,19 @@ const Canvas = observer(() => {
               figure.width,
               figure.height,
               figure.strokeColor,
-              figure.fillColor
+              figure.fillColor,
+              figure.strokeWidth
+            )
+            break
+          case Tools.line:
+            Line.draw(
+              ctx,
+              figure.x1,
+              figure.y1,
+              figure.x2,
+              figure.y2,
+              figure.color,
+              figure.lineWidth
             )
             break
           case Tools.eraser:
@@ -104,13 +117,13 @@ const Canvas = observer(() => {
       />
       <div className="p-[var(--bar-indent)] overflow-auto">
         <canvas
-          width={800}
-          height={600}
+          width={2560}
+          height={1440}
           onMouseDown={() => mouseDownHandler()}
           ref={canvasRef}
           css={css`
             margin: 0 auto;
-            border: var(--border-weight) solid black;
+            border: var(--border-weight) solid var(--border-color);
             background-color: white;
           `}
         />

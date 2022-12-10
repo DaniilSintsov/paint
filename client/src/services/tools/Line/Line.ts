@@ -1,18 +1,22 @@
-import Tool, {ITool} from '../Tool/Tool'
-import {Tools} from '../Tool/Tool.types'
+import { DefaultValues } from '../../../types/DefaultValues.types'
+import { MessageMethods } from '../../../types/WebSocket.types'
+import { Storage } from '../../Storage/Storage.service'
+import { StorageKeys } from '../../Storage/Storage.types'
+import Tool, { ITool } from '../Tool/Tool'
+import { Tools } from '../Tool/Tool.types'
 
 interface ILine extends ITool {
   draw: (x: number, y: number) => void
   mouseDown: boolean | undefined
   saved: string | undefined
-  currentX: number | undefined
-  currentY: number | undefined
+  startX: number | undefined
+  startY: number | undefined
 }
 
 export default class Line extends Tool implements ILine {
   name: string = Tools.line
-  currentX: number | undefined
-  currentY: number | undefined
+  startX: number | undefined
+  startY: number | undefined
   saved: string | undefined
   mouseDown: boolean | undefined
 
@@ -24,14 +28,29 @@ export default class Line extends Tool implements ILine {
   mouseDownHandler(e: MouseEvent): void {
     this.mouseDown = true
     this.ctx?.beginPath()
-    this.currentX = e.pageX - this.canvas.getBoundingClientRect().left
-    this.currentY = e.pageY - this.canvas.getBoundingClientRect().top
-    this.ctx?.moveTo(this.currentX, this.currentY)
+    this.startX = e.pageX - this.canvas.getBoundingClientRect().left
+    this.startY = e.pageY - this.canvas.getBoundingClientRect().top
+    this.ctx?.moveTo(this.startX, this.startY)
     this.saved = this.canvas.toDataURL()
   }
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
+    this.socket?.send(
+      JSON.stringify({
+        method: MessageMethods.draw,
+        id: this.id,
+        figure: {
+          type: Tools.line,
+          x1: this.startX,
+          y1: this.startY,
+          x2: e.pageX - this.canvas.getBoundingClientRect().left,
+          y2: e.pageY - this.canvas.getBoundingClientRect().top,
+          color: this.ctx?.strokeStyle,
+          lineWidth: this.ctx?.lineWidth
+        }
+      })
+    )
   }
 
   mouseMoveHandler(e: MouseEvent): void {
@@ -51,12 +70,32 @@ export default class Line extends Tool implements ILine {
         this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.ctx?.drawImage(img, 0, 0, this.canvas.width, this.canvas.height)
         this.ctx?.beginPath()
-        if (this.currentX && this.currentY) {
-          this.ctx?.moveTo(this.currentX, this.currentY)
-        }
+        if (this.startX && this.startY)
+          this.ctx?.moveTo(this.startX, this.startY)
         this.ctx?.lineTo(x, y)
         this.ctx?.stroke()
       }
     }
+  }
+
+  static draw(
+    ctx: CanvasRenderingContext2D,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color: string,
+    lineWidth: number
+  ): void {
+    ctx.strokeStyle = color
+    ctx.lineWidth = lineWidth
+    ctx?.beginPath()
+    ctx?.moveTo(x1, y1)
+    ctx?.lineTo(x2, y2)
+    ctx?.stroke()
+    ctx.strokeStyle =
+      Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack
+    ctx.lineWidth =
+      Storage.get(StorageKeys.lineWidth) || DefaultValues.lineWidth
   }
 }

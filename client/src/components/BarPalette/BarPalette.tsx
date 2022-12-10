@@ -1,10 +1,10 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import {css, jsx} from '@emotion/react'
-import {FC} from 'react'
-import {IBarPaletteProps} from './BarPalette.types'
+import { css, jsx } from '@emotion/react'
+import { FC } from 'react'
+import { IBarPaletteProps } from './BarPalette.types'
 
-const BarPalette: FC<IBarPaletteProps> = ({onChange, description, value}) => {
+const BarPalette: FC<IBarPaletteProps> = ({ onChange, description, value }) => {
   return (
     <div
       className="tip tip-align-left"
@@ -14,7 +14,10 @@ const BarPalette: FC<IBarPaletteProps> = ({onChange, description, value}) => {
         type="color"
         value={value}
         css={css`
-          border: var(--border-weight) solid black;
+          border: var(--border-weight) solid var(--border-color);
+          &:focus {
+            border: var(--border-weight) solid var(--border-focus-color);
+          }
         `}
         className="h-[var(--bar-button-size)] w-[var(--bar-button-size)] border-[var(--border-weight)] cursor-pointer"
       />

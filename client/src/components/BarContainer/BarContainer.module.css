@@ -1,6 +1,6 @@
 .bar {
   background-color: var(--bgc);
-  border-bottom: var(--border-weight) solid black;
+  border-bottom: var(--border-weight) solid var(--border-color);
 }
 
 .barContainer {
