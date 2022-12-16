@@ -44,7 +44,7 @@
   width: 100%;
   padding: 10px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   outline: none;
   transition: 0.3s;
   border: var(--border-weight) solid var(--border-color);

@@ -17,6 +17,7 @@ import {
 import { Tools } from '../../services/tools/Tool/Tool.types'
 import Eraser from '../../services/tools/Eraser/Eraser'
 import Line from '../../services/tools/Line/Line'
+import Circle from '../../services/tools/Circle/Circle'
 
 const Canvas = observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -90,6 +91,17 @@ const Canvas = observer(() => {
               figure.y2,
               figure.color,
               figure.lineWidth
+            )
+            break
+          case Tools.circle:
+            Circle.draw(
+              ctx,
+              figure.x,
+              figure.y,
+              figure.radius,
+              figure.strokeColor,
+              figure.fillColor,
+              figure.strokeWidth
             )
             break
           case Tools.eraser:

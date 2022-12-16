@@ -22,6 +22,7 @@ export type Figure =
   | IFigureRect
   | IFigureEraser
   | IFigureLine
+  | IFigureCircle
 
 interface IFigureNone {
   type: Tools.none
@@ -61,6 +62,16 @@ interface IFigureLine {
   y2: number
   color: string
   lineWidth: number
+}
+
+interface IFigureCircle {
+  type: Tools.circle
+  x: number
+  y: number
+  radius: number
+  fillColor: string
+  strokeColor: string
+  strokeWidth: number
 }
 
 interface IMessageData {
