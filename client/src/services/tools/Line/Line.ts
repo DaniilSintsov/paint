@@ -1,5 +1,8 @@
 import { DefaultValues } from '../../../types/DefaultValues.types'
-import { MessageMethods } from '../../../types/WebSocket.types'
+import {
+  IMessageDataDraw,
+  MessageMethods
+} from '../../../types/WebSocket.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
 import Tool, { ITool } from '../Tool/Tool'
@@ -36,21 +39,20 @@ export default class Line extends Tool implements ILine {
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    this.socket?.send(
-      JSON.stringify({
-        method: MessageMethods.draw,
-        id: this.id,
-        figure: {
-          type: Tools.line,
-          x1: this.startX,
-          y1: this.startY,
-          x2: e.pageX - this.canvas.getBoundingClientRect().left,
-          y2: e.pageY - this.canvas.getBoundingClientRect().top,
-          color: this.ctx?.strokeStyle,
-          lineWidth: this.ctx?.lineWidth
-        }
-      })
-    )
+    const data: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.line,
+        x1: this.startX as number,
+        y1: this.startY as number,
+        x2: e.pageX - this.canvas.getBoundingClientRect().left,
+        y2: e.pageY - this.canvas.getBoundingClientRect().top,
+        color: this.ctx?.strokeStyle as string,
+        lineWidth: this.ctx?.lineWidth as number
+      }
+    }
+    this.socket?.send(JSON.stringify(data))
   }
 
   mouseMoveHandler(e: MouseEvent): void {

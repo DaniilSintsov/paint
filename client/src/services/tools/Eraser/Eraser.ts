@@ -1,9 +1,12 @@
-import {BrushParent} from '../Brush/Brush'
-import {Tools} from '../Tool/Tool.types'
-import {Storage} from '../../Storage/Storage.service'
-import {StorageKeys} from '../../Storage/Storage.types'
-import {DefaultValues} from '../../../types/DefaultValues.types'
-import {MessageMethods} from '../../../types/WebSocket.types'
+import { BrushParent } from '../Brush/Brush'
+import { Tools } from '../Tool/Tool.types'
+import { Storage } from '../../Storage/Storage.service'
+import { StorageKeys } from '../../Storage/Storage.types'
+import { DefaultValues } from '../../../types/DefaultValues.types'
+import {
+  IMessageDataDraw,
+  MessageMethods
+} from '../../../types/WebSocket.types'
 
 export default class Eraser extends BrushParent {
   name: string = Tools.eraser
@@ -15,18 +18,17 @@ export default class Eraser extends BrushParent {
 
   mouseMoveHandler(e: MouseEvent): void {
     if (this.mouseDown) {
-      this.socket?.send(
-        JSON.stringify({
-          method: MessageMethods.draw,
-          id: this.id,
-          figure: {
-            type: Tools.eraser,
-            x: e.pageX - this.canvas.getBoundingClientRect().left,
-            y: e.pageY - this.canvas.getBoundingClientRect().top,
-            lineWidth: this.ctx?.lineWidth
-          }
-        })
-      )
+      const data: IMessageDataDraw = {
+        method: MessageMethods.draw,
+        id: this.id as string,
+        figure: {
+          type: Tools.eraser,
+          x: e.pageX - this.canvas.getBoundingClientRect().left,
+          y: e.pageY - this.canvas.getBoundingClientRect().top,
+          lineWidth: this.ctx?.lineWidth as number
+        }
+      }
+      this.socket?.send(JSON.stringify(data))
     }
   }
 

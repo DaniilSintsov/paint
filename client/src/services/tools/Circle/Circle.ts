@@ -1,5 +1,8 @@
 import { DefaultValues } from '../../../types/DefaultValues.types'
-import { MessageMethods } from '../../../types/WebSocket.types'
+import {
+  IMessageDataDraw,
+  MessageMethods
+} from '../../../types/WebSocket.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
 import Tool, { ITool } from '../Tool/Tool'
@@ -29,21 +32,20 @@ export default class Circle extends Tool implements ICircle {
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    this.socket?.send(
-      JSON.stringify({
-        method: MessageMethods.draw,
-        id: this.id,
-        figure: {
-          type: Tools.circle,
-          x: this.startX,
-          y: this.startY,
-          radius: this.radius,
-          fillColor: this.ctx?.fillStyle,
-          strokeColor: this.ctx?.strokeStyle,
-          strokeWidth: this.ctx?.lineWidth
-        }
-      })
-    )
+    const data: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.circle,
+        x: this.startX as number,
+        y: this.startY as number,
+        radius: this.radius as number,
+        fillColor: this.ctx?.fillStyle as string,
+        strokeColor: this.ctx?.strokeStyle as string,
+        strokeWidth: this.ctx?.lineWidth as number
+      }
+    }
+    this.socket?.send(JSON.stringify(data))
   }
 
   mouseDownHandler(e: MouseEvent): void {

@@ -1,4 +1,4 @@
-import {Figure} from '../services/tools/Tool/Tool.types'
+import { Figure } from '../services/tools/Tool/Tool.types'
 
 export enum MessageMethods {
   connection = 'connection',
@@ -7,11 +7,11 @@ export enum MessageMethods {
 
 interface IMessageData {
   id: string
-  username: string
 }
 
 export interface IMessageDataConnection extends IMessageData {
   method: MessageMethods.connection
+  username: string
 }
 
 export interface IMessageDataDraw extends IMessageData {

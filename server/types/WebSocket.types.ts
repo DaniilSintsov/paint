@@ -76,11 +76,11 @@ interface IFigureCircle {
 
 interface IMessageData {
   id: string
-  username: string
 }
 
 export interface IMessageDataConnection extends IMessageData {
   method: MessageMethods.connection
+  username: string
 }
 
 export interface IMessageDataDraw extends IMessageData {

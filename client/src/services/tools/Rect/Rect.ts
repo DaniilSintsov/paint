@@ -1,7 +1,10 @@
 import Tool, { ITool } from '../Tool/Tool'
 import { Tools } from '../Tool/Tool.types'
 import { DefaultValues } from '../../../types/DefaultValues.types'
-import { MessageMethods } from '../../../types/WebSocket.types'
+import {
+  IMessageDataDraw,
+  MessageMethods
+} from '../../../types/WebSocket.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
 
@@ -31,22 +34,21 @@ export default class Rect extends Tool implements IRect {
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    this.socket?.send(
-      JSON.stringify({
-        method: MessageMethods.draw,
-        id: this.id,
-        figure: {
-          type: Tools.rect,
-          x: this.startX,
-          y: this.startY,
-          width: this.width,
-          height: this.height,
-          fillColor: this.ctx?.fillStyle,
-          strokeColor: this.ctx?.strokeStyle,
-          strokeWidth: this.ctx?.lineWidth
-        }
-      })
-    )
+    const data: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.rect,
+        x: this.startX as number,
+        y: this.startY as number,
+        width: this.width as number,
+        height: this.height as number,
+        strokeColor: this.ctx?.strokeStyle as string,
+        fillColor: this.ctx?.fillStyle as string,
+        strokeWidth: this.ctx?.lineWidth as number
+      }
+    }
+    this.socket?.send(JSON.stringify(data))
   }
 
   mouseDownHandler(e: MouseEvent): void {
