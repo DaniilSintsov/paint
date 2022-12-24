@@ -2,7 +2,14 @@ import { Figure } from '../services/tools/Tool/Tool.types'
 
 export enum MessageMethods {
   connection = 'connection',
-  draw = 'draw'
+  draw = 'draw',
+  actions = 'actions'
+}
+
+export enum MessageActionsMethodType {
+  undo = 'undo',
+  redo = 'redo',
+  none = 'none'
 }
 
 interface IMessageData {
@@ -17,4 +24,11 @@ export interface IMessageDataConnection extends IMessageData {
 export interface IMessageDataDraw extends IMessageData {
   method: MessageMethods.draw
   figure: Figure
+}
+
+export interface IMessageDataActions extends IMessageData {
+  method: MessageMethods.actions
+  action: MessageActionsMethodType
+  undoList: string[]
+  redoList: string[]
 }

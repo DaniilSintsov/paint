@@ -70,9 +70,7 @@ class CanvasState implements ICanvasState {
     const ctx = this.canvas?.getContext('2d')
     if (this.undoList.length > 0) {
       const dataUrl: string = this.undoList.pop() as string
-      if (this.canvas) {
-        this.pushToRedo(this.canvas?.toDataURL())
-      }
+      this.canvas && this.pushToRedo(this.canvas?.toDataURL())
       this.drawImage(dataUrl)
     } else {
       if (this.canvas?.width && this.canvas.height) {
@@ -84,9 +82,7 @@ class CanvasState implements ICanvasState {
   redo(): void {
     if (this.redoList.length > 0) {
       const dataUrl: string = this.redoList.pop() as string
-      if (this.canvas) {
-        this.pushToUndo(this.canvas.toDataURL())
-      }
+      this.canvas && this.pushToUndo(this.canvas.toDataURL())
       this.drawImage(dataUrl)
     }
   }

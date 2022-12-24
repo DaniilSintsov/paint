@@ -1,5 +1,6 @@
 import {
   IExtWebSocket,
+  IMessageDataActions,
   IMessageDataConnection,
   IMessageDataDraw,
   MessageMethods
@@ -14,14 +15,17 @@ const PORT = process.env.PORT || 5000
 
 app.ws('/', (ws: IExtWebSocket, req: Request): void => {
   ws.onmessage = (msg: MessageEvent) => {
-    const message: IMessageDataConnection | IMessageDataDraw = JSON.parse(
-      msg.data
-    )
+    const message:
+      | IMessageDataConnection
+      | IMessageDataDraw
+      | IMessageDataActions = JSON.parse(msg.data)
     switch (message.method) {
       case MessageMethods.connection:
         connectionHandler(ws, message)
         break
       case MessageMethods.draw:
+        broadcastConnection(ws, message)
+      case MessageMethods.actions:
         broadcastConnection(ws, message)
     }
   }
@@ -39,7 +43,7 @@ function connectionHandler(
 
 function broadcastConnection(
   ws: IExtWebSocket,
-  message: IMessageDataConnection | IMessageDataDraw
+  message: IMessageDataConnection | IMessageDataDraw | IMessageDataActions
 ): void {
   aWss.clients.forEach(
     (

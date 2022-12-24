@@ -21,6 +21,11 @@ import { Tools } from '../../services/tools/Tool/Tool.types'
 import { DefaultValues } from '../../types/DefaultValues.types'
 import { Storage } from '../../services/Storage/Storage.service'
 import { StorageKeys } from '../../services/Storage/Storage.types'
+import {
+  IMessageDataActions,
+  MessageActionsMethodType,
+  MessageMethods
+} from '../../types/WebSocket.types'
 
 const Toolbar = () => {
   type Constructable<T = any> = new (...args: any[]) => T
@@ -51,6 +56,28 @@ const Toolbar = () => {
     },
     []
   )
+
+  const undoHandler = (): void => {
+    const data: IMessageDataActions = {
+      method: MessageMethods.actions,
+      id: canvasState.sessionId as string,
+      action: MessageActionsMethodType.undo,
+      undoList: canvasState.undoList,
+      redoList: canvasState.redoList
+    }
+    canvasState.socket?.send(JSON.stringify(data))
+  }
+
+  const redoHandler = (): void => {
+    const data: IMessageDataActions = {
+      method: MessageMethods.actions,
+      id: canvasState.sessionId as string,
+      action: MessageActionsMethodType.redo,
+      undoList: canvasState.undoList,
+      redoList: canvasState.redoList
+    }
+    canvasState.socket?.send(JSON.stringify(data))
+  }
 
   useEffect(() => {
     barButtonHandler(Brush)
@@ -93,13 +120,13 @@ const Toolbar = () => {
       <div className="flex gap-x-[var(--bar-indent)]">
         <BarButton
           tipAlign="right"
-          onClick={() => canvasState.undo()}
+          onClick={undoHandler}
           image={undoImg}
           description="Назад"
         />
         <BarButton
           tipAlign="right"
-          onClick={() => canvasState.redo()}
+          onClick={redoHandler}
           image={redoImg}
           description="Вперед"
         />

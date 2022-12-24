@@ -10,8 +10,10 @@ import toolState from '../../store/toolState'
 import Modal from '../Modal/Modal'
 import { useParams } from 'react-router-dom'
 import {
+  IMessageDataActions,
   IMessageDataConnection,
   IMessageDataDraw,
+  MessageActionsMethodType,
   MessageMethods
 } from '../../types/WebSocket.types'
 import { Tools } from '../../services/tools/Tool/Tool.types'
@@ -47,15 +49,28 @@ const Canvas = observer(() => {
     }
 
     socket.onmessage = (msg: MessageEvent) => {
-      const message: IMessageDataConnection | IMessageDataDraw = JSON.parse(
-        msg.data
-      )
+      const message:
+        | IMessageDataConnection
+        | IMessageDataDraw
+        | IMessageDataActions = JSON.parse(msg.data)
       switch (message.method) {
         case MessageMethods.connection:
           console.log(`Пользователь ${message.username} присоединился`)
           break
         case MessageMethods.draw:
           drawHandler(message)
+          break
+        case MessageMethods.actions:
+          canvasState.undoList = message.undoList
+          canvasState.redoList = message.redoList
+          switch (message.action) {
+            case MessageActionsMethodType.undo:
+              canvasState.undo()
+              break
+            case MessageActionsMethodType.redo:
+              canvasState.redo()
+              break
+          }
           break
       }
     }
@@ -116,9 +131,15 @@ const Canvas = observer(() => {
   }
 
   const mouseDownHandler = (): void => {
-    if (canvasRef.current) {
-      canvasState.pushToUndo(canvasRef.current.toDataURL())
+    canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
+    const data: IMessageDataActions = {
+      id: canvasState.sessionId as string,
+      method: MessageMethods.actions,
+      action: MessageActionsMethodType.none,
+      undoList: canvasState.undoList,
+      redoList: canvasState.redoList
     }
+    canvasState.socket?.send(JSON.stringify(data))
   }
 
   return (
@@ -131,7 +152,7 @@ const Canvas = observer(() => {
         <canvas
           width={2560}
           height={1440}
-          onMouseDown={() => mouseDownHandler()}
+          onMouseDown={mouseDownHandler}
           ref={canvasRef}
           css={css`
             margin: 0 auto;
