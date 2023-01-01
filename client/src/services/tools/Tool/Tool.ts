@@ -12,10 +12,12 @@ export interface ITool {
   socket: WebSocket | undefined
   id: string | undefined
   name: string | undefined
+  mouseDown: boolean | undefined
 }
 
 export default class Tool implements ITool {
   name: string | undefined
+  mouseDown: boolean | undefined
   canvas: HTMLCanvasElement
   ctx: CanvasRenderingContext2D | null
   socket: WebSocket | undefined
@@ -59,9 +61,9 @@ export default class Tool implements ITool {
     this.canvas.onmousemove = null
   }
 
-  mouseDownHandler(e: MouseEvent): void {}
+  mouseDownHandler(e: MouseEvent): void { }
 
-  mouseMoveHandler(e: MouseEvent): void {}
+  mouseMoveHandler(e: MouseEvent): void { }
 
-  mouseUpHandler(e: MouseEvent): void {}
+  mouseUpHandler(e: MouseEvent): void { }
 }

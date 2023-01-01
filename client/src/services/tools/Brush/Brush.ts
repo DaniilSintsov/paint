@@ -9,11 +9,11 @@ import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
 
 interface IBrush extends ITool {
-  mouseDown: boolean | undefined
+  coords: [number, number][]
 }
 
 export class BrushParent extends Tool implements IBrush {
-  mouseDown: boolean | undefined
+  coords: [number, number][] = []
 
   constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
     super(canvas, socket, id)
@@ -22,30 +22,39 @@ export class BrushParent extends Tool implements IBrush {
 
   mouseDownHandler(e: MouseEvent): void {
     this.mouseDown = true
+    if (this.ctx?.strokeStyle) {
+      if (this.name === Tools.eraser)
+        this.ctx.strokeStyle = DefaultValues.colorWhite
+      else if (this.name === Tools.brush)
+        this.ctx.strokeStyle =
+          Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack
+    }
     this.ctx?.moveTo(
       e.pageX - this.canvas.getBoundingClientRect().left,
       e.pageY - this.canvas.getBoundingClientRect().top
     )
-    const data: IMessageDataDraw = {
+    const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
       id: this.id as string,
       figure: {
         type: Tools.none
       }
     }
-    this.socket?.send(JSON.stringify(data))
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
-  mouseUpHandler(e: MouseEvent): void {
-    this.mouseDown = false
-    const data: IMessageDataDraw = {
-      method: MessageMethods.draw,
-      id: this.id as string,
-      figure: {
-        type: Tools.none
-      }
+  mouseMoveHandler(e: MouseEvent): void {
+    if (this.mouseDown) {
+      const x: number = e.pageX - this.canvas.getBoundingClientRect().left
+      const y: number = e.pageY - this.canvas.getBoundingClientRect().top
+      this.coords.push([x, y])
+      this.draw(x, y)
     }
-    this.socket?.send(JSON.stringify(data))
+  }
+
+  draw(x: number, y: number): void {
+    this.ctx?.lineTo(x, y)
+    this.ctx?.stroke()
   }
 }
 
@@ -57,33 +66,43 @@ export default class Brush extends BrushParent implements IBrush {
     this.listen()
   }
 
-  mouseMoveHandler(e: MouseEvent): void {
-    if (this.mouseDown) {
-      const data: IMessageDataDraw = {
-        method: MessageMethods.draw,
-        id: this.id as string,
-        figure: {
-          type: Tools.brush,
-          x: e.pageX - this.canvas.getBoundingClientRect().left,
-          y: e.pageY - this.canvas.getBoundingClientRect().top,
-          color: this.ctx?.strokeStyle as string,
-          lineWidth: this.ctx?.lineWidth as number
-        }
+  mouseUpHandler(e: MouseEvent): void {
+    this.mouseDown = false
+    const drawData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.brush,
+        coords: this.coords,
+        color: this.ctx?.strokeStyle as string,
+        lineWidth: this.ctx?.lineWidth as number
       }
-      this.socket?.send(JSON.stringify(data))
     }
+    this.socket?.send(JSON.stringify(drawData))
+    this.coords = []
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   static draw(
     ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
+    coords: [number, number][],
     color: string,
     lineWidth: number
   ): void {
     ctx.strokeStyle = color
     ctx.lineWidth = lineWidth
-    ctx?.lineTo(x, y)
+    ctx.beginPath()
+    coords.forEach(coord => {
+      ctx?.lineTo(coord[0], coord[1])
+    })
     ctx?.stroke()
     ctx.strokeStyle =
       Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack

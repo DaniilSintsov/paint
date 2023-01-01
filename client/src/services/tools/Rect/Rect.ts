@@ -10,7 +10,6 @@ import { StorageKeys } from '../../Storage/Storage.types'
 
 interface IRect extends ITool {
   draw: (x: number, y: number, w: number, h: number) => void
-  mouseDown: boolean | undefined
   startX: number | undefined
   startY: number | undefined
   saved: string | undefined
@@ -23,7 +22,6 @@ export default class Rect extends Tool implements IRect {
   saved: string | undefined
   startX: number | undefined
   startY: number | undefined
-  mouseDown: boolean | undefined
   width: number | undefined
   height: number | undefined
 
@@ -34,7 +32,7 @@ export default class Rect extends Tool implements IRect {
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    const data: IMessageDataDraw = {
+    const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
       id: this.id as string,
       figure: {
@@ -48,7 +46,16 @@ export default class Rect extends Tool implements IRect {
         strokeWidth: this.ctx?.lineWidth as number
       }
     }
-    this.socket?.send(JSON.stringify(data))
+    this.socket?.send(JSON.stringify(drawData))
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseDownHandler(e: MouseEvent): void {
@@ -57,6 +64,15 @@ export default class Rect extends Tool implements IRect {
     this.startX = e.pageX - this.canvas.getBoundingClientRect().left
     this.startY = e.pageY - this.canvas.getBoundingClientRect().top
     this.saved = this.canvas.toDataURL()
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseMoveHandler(e: MouseEvent): void {

@@ -83,7 +83,7 @@ const Canvas = observer(() => {
       if (ctx) {
         switch (figure.type) {
           case Tools.brush:
-            Brush.draw(ctx, figure.x, figure.y, figure.color, figure.lineWidth)
+            Brush.draw(ctx, figure.coords, figure.color, figure.lineWidth)
             break
           case Tools.rect:
             Rect.draw(
@@ -120,7 +120,7 @@ const Canvas = observer(() => {
             )
             break
           case Tools.eraser:
-            Eraser.draw(ctx, figure.x, figure.y, figure.lineWidth)
+            Eraser.draw(ctx, figure.coords, figure.lineWidth)
             break
           case Tools.none:
             ctx.beginPath()

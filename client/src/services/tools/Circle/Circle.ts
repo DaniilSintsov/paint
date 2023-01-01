@@ -10,7 +10,6 @@ import { Tools } from '../Tool/Tool.types'
 
 interface ICircle extends ITool {
   draw: (x: number, y: number, radius: number) => void
-  mouseDown: boolean | undefined
   startX: number | undefined
   startY: number | undefined
   saved: string | undefined
@@ -22,7 +21,6 @@ export default class Circle extends Tool implements ICircle {
   saved: string | undefined
   startX: number | undefined
   startY: number | undefined
-  mouseDown: boolean | undefined
   radius: number | undefined
 
   constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
@@ -32,7 +30,7 @@ export default class Circle extends Tool implements ICircle {
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    const data: IMessageDataDraw = {
+    const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
       id: this.id as string,
       figure: {
@@ -45,7 +43,16 @@ export default class Circle extends Tool implements ICircle {
         strokeWidth: this.ctx?.lineWidth as number
       }
     }
-    this.socket?.send(JSON.stringify(data))
+    this.socket?.send(JSON.stringify(drawData))
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseDownHandler(e: MouseEvent): void {
@@ -54,6 +61,15 @@ export default class Circle extends Tool implements ICircle {
     this.startX = e.pageX - this.canvas.getBoundingClientRect().left
     this.startY = e.pageY - this.canvas.getBoundingClientRect().top
     this.saved = this.canvas.toDataURL()
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseMoveHandler(e: MouseEvent): void {

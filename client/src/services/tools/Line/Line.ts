@@ -10,7 +10,6 @@ import { Tools } from '../Tool/Tool.types'
 
 interface ILine extends ITool {
   draw: (x: number, y: number) => void
-  mouseDown: boolean | undefined
   saved: string | undefined
   startX: number | undefined
   startY: number | undefined
@@ -21,7 +20,6 @@ export default class Line extends Tool implements ILine {
   startX: number | undefined
   startY: number | undefined
   saved: string | undefined
-  mouseDown: boolean | undefined
 
   constructor(canvas: HTMLCanvasElement, socket: WebSocket, id: string) {
     super(canvas, socket, id)
@@ -35,11 +33,20 @@ export default class Line extends Tool implements ILine {
     this.startY = e.pageY - this.canvas.getBoundingClientRect().top
     this.ctx?.moveTo(this.startX, this.startY)
     this.saved = this.canvas.toDataURL()
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseUpHandler(e: MouseEvent): void {
     this.mouseDown = false
-    const data: IMessageDataDraw = {
+    const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
       id: this.id as string,
       figure: {
@@ -52,7 +59,16 @@ export default class Line extends Tool implements ILine {
         lineWidth: this.ctx?.lineWidth as number
       }
     }
-    this.socket?.send(JSON.stringify(data))
+    this.socket?.send(JSON.stringify(drawData))
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   mouseMoveHandler(e: MouseEvent): void {

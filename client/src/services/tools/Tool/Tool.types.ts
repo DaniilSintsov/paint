@@ -21,16 +21,14 @@ interface IFigureNone {
 
 interface IFigureBrush {
   type: Tools.brush
-  x: number
-  y: number
+  coords: [number, number][]
   color: string
   lineWidth: number
 }
 
 interface IFigureEraser {
   type: Tools.eraser
-  x: number
-  y: number
+  coords: [number, number][]
   lineWidth: number
 }
 

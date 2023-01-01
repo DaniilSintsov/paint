@@ -16,31 +16,41 @@ export default class Eraser extends BrushParent {
     this.listen()
   }
 
-  mouseMoveHandler(e: MouseEvent): void {
-    if (this.mouseDown) {
-      const data: IMessageDataDraw = {
-        method: MessageMethods.draw,
-        id: this.id as string,
-        figure: {
-          type: Tools.eraser,
-          x: e.pageX - this.canvas.getBoundingClientRect().left,
-          y: e.pageY - this.canvas.getBoundingClientRect().top,
-          lineWidth: this.ctx?.lineWidth as number
-        }
+  mouseUpHandler(e: MouseEvent): void {
+    this.mouseDown = false
+    const drawData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.eraser,
+        coords: this.coords,
+        lineWidth: this.ctx?.lineWidth as number
       }
-      this.socket?.send(JSON.stringify(data))
     }
+    this.socket?.send(JSON.stringify(drawData))
+    this.coords = []
+
+    const clearPathData: IMessageDataDraw = {
+      method: MessageMethods.draw,
+      id: this.id as string,
+      figure: {
+        type: Tools.none
+      }
+    }
+    this.socket?.send(JSON.stringify(clearPathData))
   }
 
   static draw(
     ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
+    coords: [number, number][],
     lineWidth: number
   ): void {
     ctx.strokeStyle = DefaultValues.colorWhite
     ctx.lineWidth = lineWidth
-    ctx?.lineTo(x, y)
+    ctx.beginPath()
+    coords.forEach(coord => {
+      ctx?.lineTo(coord[0], coord[1])
+    })
     ctx?.stroke()
     ctx.strokeStyle =
       Storage.get(StorageKeys.strokeColor) || DefaultValues.colorBlack
