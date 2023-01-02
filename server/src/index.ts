@@ -4,29 +4,32 @@ import {
   IMessageDataConnection,
   IMessageDataDraw,
   MessageMethods
-} from './types/WebSocket.types'
+} from './types/WebSocket.types.js'
+import express, { Request } from 'express'
+import expressWs from 'express-ws'
+import { MessageEvent, WebSocket } from 'ws'
 
-const express = require('express')
-const app = express()
-const wsServer = require('express-ws')(app)
+const appBase: express.Application = express()
+const wsServer = expressWs(appBase)
 const aWss = wsServer.getWss()
+const { app } = wsServer
 
 const PORT = process.env.PORT || 5000
 
-app.ws('/', (ws: IExtWebSocket, req: Request): void => {
+app.ws('/', (ws: WebSocket, req: Request): void => {
   ws.onmessage = (msg: MessageEvent) => {
     const message:
       | IMessageDataConnection
       | IMessageDataDraw
-      | IMessageDataActions = JSON.parse(msg.data)
+      | IMessageDataActions = JSON.parse(msg.data as string)
     switch (message.method) {
       case MessageMethods.connection:
-        connectionHandler(ws, message)
+        connectionHandler(ws as IExtWebSocket, message)
         break
       case MessageMethods.draw:
-        broadcastConnection(ws, message)
+        broadcastConnection(ws as IExtWebSocket, message)
       case MessageMethods.actions:
-        broadcastConnection(ws, message)
+        broadcastConnection(ws as IExtWebSocket, message)
     }
   }
 })
@@ -46,14 +49,9 @@ function broadcastConnection(
   message: IMessageDataConnection | IMessageDataDraw | IMessageDataActions
 ): void {
   aWss.clients.forEach(
-    (
-      client: IExtWebSocket,
-      _: IExtWebSocket,
-      set: Set<IExtWebSocket>
-    ): void => {
-      if (client.id === message.id) {
-        client.send(JSON.stringify(message))
-      }
+    (client: WebSocket, _: WebSocket, set: Set<WebSocket>): void => {
+      if ((client as IExtWebSocket).id === message.id)
+        (client as IExtWebSocket).send(JSON.stringify(message))
     }
   )
 }

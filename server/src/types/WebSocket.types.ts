@@ -1,3 +1,5 @@
+import { WebSocket } from 'ws'
+
 export interface IExtWebSocket extends WebSocket {
   id: string
 }

@@ -1,8 +1,6 @@
 import React from 'react'
-import Canvas from './components/Canvas/Canvas'
-import SettingsBar from './components/SettingsBar/SettingsBar'
-import Toolbar from './components/Toolbar/Toolbar'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import CanvasPage from './pages/CanvasPage/CanvasPage'
 
 function App() {
   return (
@@ -10,15 +8,7 @@ function App() {
       <Routes>
         <Route
           path="/:id"
-          element={
-            <>
-              <div>
-                <Toolbar />
-                <SettingsBar />
-              </div>
-              <Canvas />
-            </>
-          }
+          element={<CanvasPage />}
         />
         <Route
           path="*"

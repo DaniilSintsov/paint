@@ -11,7 +11,7 @@ const BarInput: FC<IBarInputProps> = ({
   defaultValue,
   description
 }) => {
-  function inputHandler(e: React.ChangeEvent<HTMLInputElement>): void {
+  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (+e.target.value > max) {
       e.target.value = max.toString()
     } else if (+e.target.value < min) {

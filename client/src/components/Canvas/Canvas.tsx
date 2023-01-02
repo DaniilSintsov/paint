@@ -32,9 +32,14 @@ const Canvas = observer(() => {
     }
   }, [])
 
-  useEffect(() => {
+  const processWebSocketConnection = (): void => {
     const socket = new WebSocket('ws://localhost:5000')
     canvasState.setSocket(socket)
+    onOpenWebSocketHandler(socket)
+    onMessageWebSocketHandler(socket)
+  }
+
+  const onOpenWebSocketHandler = (socket: WebSocket): void => {
     socket.onopen = () => {
       if (params.id && canvasState.username && canvasRef.current) {
         canvasState.setSessionId(params.id)
@@ -47,7 +52,9 @@ const Canvas = observer(() => {
         socket.send(JSON.stringify(postData))
       }
     }
+  }
 
+  const onMessageWebSocketHandler = (socket: WebSocket): void => {
     socket.onmessage = (msg: MessageEvent) => {
       const message:
         | IMessageDataConnection
@@ -55,26 +62,21 @@ const Canvas = observer(() => {
         | IMessageDataActions = JSON.parse(msg.data)
       switch (message.method) {
         case MessageMethods.connection:
-          console.log(`Пользователь ${message.username} присоединился`)
+          connectionHandler(message)
           break
         case MessageMethods.draw:
           drawHandler(message)
           break
         case MessageMethods.actions:
-          canvasState.undoList = message.undoList
-          canvasState.redoList = message.redoList
-          switch (message.action) {
-            case MessageActionsMethodType.undo:
-              canvasState.undo()
-              break
-            case MessageActionsMethodType.redo:
-              canvasState.redo()
-              break
-          }
+          actionsHandler(message)
           break
       }
     }
-  })
+  }
+
+  const connectionHandler = (message: IMessageDataConnection) => {
+    console.log(`Пользователь ${message.username} присоединился`)
+  }
 
   const drawHandler = (message: IMessageDataDraw) => {
     if (canvasRef.current) {
@@ -129,6 +131,21 @@ const Canvas = observer(() => {
       }
     }
   }
+
+  const actionsHandler = (message: IMessageDataActions) => {
+    canvasState.undoList = message.undoList
+    canvasState.redoList = message.redoList
+    switch (message.action) {
+      case MessageActionsMethodType.undo:
+        canvasState.undo()
+        break
+      case MessageActionsMethodType.redo:
+        canvasState.redo()
+        break
+    }
+  }
+
+  useEffect(processWebSocketConnection)
 
   const mouseDownHandler = (): void => {
     canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())

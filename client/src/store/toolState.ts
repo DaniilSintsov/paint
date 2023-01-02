@@ -1,5 +1,5 @@
-import {makeAutoObservable} from 'mobx'
-import {ITool} from '../services/tools/Tool/Tool'
+import { makeAutoObservable } from 'mobx'
+import { ITool } from '../services/tools/Tool/Tool'
 
 interface IToolState {
   tool: ITool | null
@@ -21,21 +21,15 @@ class ToolState implements IToolState {
   }
 
   setFillStyle(color: string): void {
-    if (this.tool) {
-      this.tool.fillStyle = color
-    }
+    if (this.tool) this.tool.fillStyle = color
   }
 
   setStrokeStyle(color: string): void {
-    if (this.tool) {
-      this.tool.strokeStyle = color
-    }
+    if (this.tool) this.tool.strokeStyle = color
   }
 
   setLineWidth(width: string): void {
-    if (this.tool) {
-      this.tool.lineWidth = +width
-    }
+    if (this.tool) this.tool.lineWidth = +width
   }
 }
 
