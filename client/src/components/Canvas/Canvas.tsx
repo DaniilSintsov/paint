@@ -20,6 +20,7 @@ import { Tools } from '../../services/tools/Tool/Tool.types'
 import Eraser from '../../services/tools/Eraser/Eraser'
 import Line from '../../services/tools/Line/Line'
 import Circle from '../../services/tools/Circle/Circle'
+import connectionState from '../../store/connectionState'
 
 const Canvas = observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -34,19 +35,19 @@ const Canvas = observer(() => {
 
   const processWebSocketConnection = (): void => {
     const socket = new WebSocket('ws://localhost:5000')
-    canvasState.setSocket(socket)
+    connectionState.setSocket(socket)
     onOpenWebSocketHandler(socket)
     onMessageWebSocketHandler(socket)
   }
 
   const onOpenWebSocketHandler = (socket: WebSocket): void => {
     socket.onopen = () => {
-      if (params.id && canvasState.username && canvasRef.current) {
-        canvasState.setSessionId(params.id)
+      if (params.id && connectionState.username && canvasRef.current) {
+        connectionState.setSessionId(params.id)
         toolState.setTool(new Brush(canvasRef.current, socket, params.id))
         const postData: IMessageDataConnection = {
           id: params.id,
-          username: canvasState.username,
+          username: connectionState.username,
           method: MessageMethods.connection
         }
         socket.send(JSON.stringify(postData))
@@ -150,13 +151,13 @@ const Canvas = observer(() => {
   const mouseDownHandler = (): void => {
     canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
     const data: IMessageDataActions = {
-      id: canvasState.sessionId as string,
+      id: connectionState.sessionId as string,
       method: MessageMethods.actions,
       action: MessageActionsMethodType.none,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
     }
-    canvasState.socket?.send(JSON.stringify(data))
+    connectionState.socket?.send(JSON.stringify(data))
   }
 
   return (

@@ -26,6 +26,7 @@ import {
   MessageActionsMethodType,
   MessageMethods
 } from '../../types/WebSocket.types'
+import connectionState from '../../store/connectionState'
 
 const Toolbar = () => {
   type Constructable<T = any> = new (...args: any[]) => T
@@ -35,8 +36,8 @@ const Toolbar = () => {
       if (canvasState.canvas) {
         const newTool: ITool = new Tool(
           canvasState.canvas,
-          canvasState.socket,
-          canvasState.sessionId
+          connectionState.socket,
+          connectionState.sessionId
         )
         toolState.setTool(newTool)
         toolState.setFillStyle(
@@ -60,23 +61,23 @@ const Toolbar = () => {
   const undoHandler = (): void => {
     const data: IMessageDataActions = {
       method: MessageMethods.actions,
-      id: canvasState.sessionId as string,
+      id: connectionState.sessionId as string,
       action: MessageActionsMethodType.undo,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
     }
-    canvasState.socket?.send(JSON.stringify(data))
+    connectionState.socket?.send(JSON.stringify(data))
   }
 
   const redoHandler = (): void => {
     const data: IMessageDataActions = {
       method: MessageMethods.actions,
-      id: canvasState.sessionId as string,
+      id: connectionState.sessionId as string,
       action: MessageActionsMethodType.redo,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
     }
-    canvasState.socket?.send(JSON.stringify(data))
+    connectionState.socket?.send(JSON.stringify(data))
   }
 
   useEffect(() => {
