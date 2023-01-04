@@ -13,6 +13,7 @@ import {
   IMessageDataActions,
   IMessageDataConnection,
   IMessageDataDraw,
+  IMessageDataSync,
   MessageActionsMethodType,
   MessageMethods
 } from '../../types/WebSocket.types'
@@ -59,11 +60,15 @@ const Canvas = observer(() => {
     socket.onmessage = (msg: MessageEvent) => {
       const message:
         | IMessageDataConnection
+        | IMessageDataSync
         | IMessageDataDraw
         | IMessageDataActions = JSON.parse(msg.data)
       switch (message.method) {
         case MessageMethods.connection:
           connectionHandler(message)
+          break
+        case MessageMethods.sync:
+          syncHandler(message)
           break
         case MessageMethods.draw:
           drawHandler(message)
@@ -76,7 +81,48 @@ const Canvas = observer(() => {
   }
 
   const connectionHandler = (message: IMessageDataConnection) => {
-    console.log(`Пользователь ${message.username} присоединился`)
+    connectionState.addUser(message.username)
+    canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
+    const syncData: IMessageDataSync = {
+      method: MessageMethods.sync,
+      id: connectionState.sessionId as string,
+      allUsers: connectionState.allUsers,
+      undoList: canvasState.undoList,
+      redoList: canvasState.redoList
+    }
+    connectionState.socket?.send(JSON.stringify(syncData))
+  }
+
+  const syncHandler = (message: IMessageDataSync) => {
+    // processing synchronization of user data
+    if (connectionState.allUsers.length < message.allUsers.length) {
+      connectionState.setAllUsers(message.allUsers)
+    } else {
+      connectionState.setAllUsers(connectionState.allUsers)
+    }
+
+    // image synchronization processing on canvas
+    if (
+      canvasState.undoList !== message.undoList ||
+      canvasState.redoList !== message.redoList
+    ) {
+      canvasState.setUndoList(message.undoList)
+      canvasState.setRedoList(message.redoList)
+      const canvas: HTMLCanvasElement | null = canvasState.canvas
+      if (canvas) {
+        const ctx: CanvasRenderingContext2D = canvas.getContext(
+          '2d'
+        ) as CanvasRenderingContext2D
+        const img: CanvasImageSource = new Image()
+        img.src = canvasState.undoList.pop() as string
+        img.onload = () => {
+          if (canvas.width && canvas.height) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+          }
+        }
+      }
+    }
   }
 
   const drawHandler = (message: IMessageDataDraw) => {
@@ -134,8 +180,8 @@ const Canvas = observer(() => {
   }
 
   const actionsHandler = (message: IMessageDataActions) => {
-    canvasState.undoList = message.undoList
-    canvasState.redoList = message.redoList
+    canvasState.setUndoList(message.undoList)
+    canvasState.setRedoList(message.redoList)
     switch (message.action) {
       case MessageActionsMethodType.undo:
         canvasState.undo()

@@ -3,6 +3,7 @@ import {
   IMessageDataActions,
   IMessageDataConnection,
   IMessageDataDraw,
+  IMessageDataSync,
   MessageMethods
 } from './types/WebSocket.types.js'
 import express, { Request } from 'express'
@@ -20,12 +21,15 @@ app.ws('/', (ws: WebSocket, req: Request): void => {
   ws.onmessage = (msg: MessageEvent) => {
     const message:
       | IMessageDataConnection
+      | IMessageDataSync
       | IMessageDataDraw
       | IMessageDataActions = JSON.parse(msg.data as string)
     switch (message.method) {
       case MessageMethods.connection:
         connectionHandler(ws as IExtWebSocket, message)
         break
+      case MessageMethods.sync:
+        broadcastConnection(ws as IExtWebSocket, message)
       case MessageMethods.draw:
         broadcastConnection(ws as IExtWebSocket, message)
       case MessageMethods.actions:
@@ -46,7 +50,11 @@ function connectionHandler(
 
 function broadcastConnection(
   ws: IExtWebSocket,
-  message: IMessageDataConnection | IMessageDataDraw | IMessageDataActions
+  message:
+    | IMessageDataConnection
+    | IMessageDataDraw
+    | IMessageDataActions
+    | IMessageDataSync
 ): void {
   aWss.clients.forEach(
     (client: WebSocket, _: WebSocket, set: Set<WebSocket>): void => {

@@ -5,6 +5,8 @@ interface ICanvasState {
   setCanvas: (canvas: HTMLCanvasElement) => void
   undoList: string[]
   redoList: string[]
+  setUndoList: (undoList: string[]) => void
+  setRedoList: (redoList: string[]) => void
   pushToUndo: (data: string) => void
   pushToRedo: (data: string) => void
   undo: () => void
@@ -22,6 +24,14 @@ class CanvasState implements ICanvasState {
 
   setCanvas(canvas: HTMLCanvasElement): void {
     this.canvas = canvas
+  }
+
+  setUndoList(undoList: string[]): void {
+    this.undoList = undoList
+  }
+
+  setRedoList(redoList: string[]): void {
+    this.redoList = redoList
   }
 
   pushToRedo(data: string): void {

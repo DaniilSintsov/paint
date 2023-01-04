@@ -7,7 +7,8 @@ export interface IExtWebSocket extends WebSocket {
 export enum MessageMethods {
   connection = 'connection',
   draw = 'draw',
-  actions = 'actions'
+  actions = 'actions',
+  sync = 'sync'
 }
 
 interface IMessageData {
@@ -24,4 +25,8 @@ export interface IMessageDataDraw extends IMessageData {
 
 export interface IMessageDataActions extends IMessageData {
   method: MessageMethods.actions
+}
+
+export interface IMessageDataSync extends IMessageData {
+  method: MessageMethods.sync
 }

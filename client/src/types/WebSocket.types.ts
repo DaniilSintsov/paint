@@ -2,6 +2,7 @@ import { Figure } from '../services/tools/Tool/Tool.types'
 
 export enum MessageMethods {
   connection = 'connection',
+  sync = 'sync',
   draw = 'draw',
   actions = 'actions'
 }
@@ -29,6 +30,13 @@ export interface IMessageDataDraw extends IMessageData {
 export interface IMessageDataActions extends IMessageData {
   method: MessageMethods.actions
   action: MessageActionsMethodType
+  undoList: string[]
+  redoList: string[]
+}
+
+export interface IMessageDataSync extends IMessageData {
+  method: MessageMethods.sync
+  allUsers: string[]
   undoList: string[]
   redoList: string[]
 }

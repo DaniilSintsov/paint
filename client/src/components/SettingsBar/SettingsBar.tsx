@@ -8,6 +8,7 @@ import { DefaultValues } from '../../types/DefaultValues.types'
 import useFillColor from '../../hooks/UseFillColor/useFillColor.hook'
 import useStrokeColor from '../../hooks/UseStrokeColor/useStrokeColor.hook'
 import BarInput from '../BarInput/BarInput'
+import UserList from '../UserList/UserList'
 
 const SettingsBar = () => {
   const fillColor = useFillColor(
@@ -46,6 +47,7 @@ const SettingsBar = () => {
           onChange={e => strokeColor.changeColor(e)}
         />
       </div>
+      <UserList />
     </BarContainer>
   )
 }
