@@ -5,13 +5,12 @@ import { jsx, css } from '@emotion/react'
 import { observer } from 'mobx-react-lite'
 import Brush from '../../services/tools/Brush/Brush'
 import Rect from '../../services/tools/Rect/Rect'
-import canvasState from '../../store/canvasState'
-import toolState from '../../store/toolState'
+import canvasState from '../../store/canvasState/canvasState'
+import toolState from '../../store/toolState/toolState'
 import Modal from '../Modal/Modal'
 import { useParams } from 'react-router-dom'
 import {
   IMessageDataActions,
-  IMessageDataClose,
   IMessageDataCloseWithAllUsers,
   IMessageDataConnection,
   IMessageDataConnectionWithAllUsers,
@@ -24,7 +23,8 @@ import { Tools } from '../../services/tools/Tool/Tool.types'
 import Eraser from '../../services/tools/Eraser/Eraser'
 import Line from '../../services/tools/Line/Line'
 import Circle from '../../services/tools/Circle/Circle'
-import connectionState from '../../store/connectionState'
+import connectionState from '../../store/connectionState/connectionState'
+import { drawImageOnCanvas } from '../../utils/helpers/drawImageOnCanvas.helper'
 
 const Canvas = observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -32,9 +32,7 @@ const Canvas = observer(() => {
   const params = useParams()
 
   useEffect(() => {
-    if (canvasRef.current) {
-      canvasState.setCanvas(canvasRef.current)
-    }
+    canvasRef.current && canvasState.setCanvas(canvasRef.current)
   }, [])
 
   const processWebSocketConnection = (): void => {
@@ -46,9 +44,9 @@ const Canvas = observer(() => {
 
   const onOpenWebSocketHandler = (socket: WebSocket): void => {
     socket.onopen = () => {
-      if (params.id && connectionState.userId && canvasRef.current) {
+      if (params.id && connectionState.userId && canvasState.canvas) {
         connectionState.setSessionId(params.id)
-        toolState.setTool(new Brush(canvasRef.current, socket, params.id))
+        toolState.setTool(new Brush(canvasState.canvas, socket, params.id))
         const postData: IMessageDataConnection = {
           sessionId: params.id,
           userId: connectionState.userId,
@@ -82,13 +80,14 @@ const Canvas = observer(() => {
           break
         case MessageMethods.close:
           closeHandler(message)
+          break
       }
     }
   }
 
   const connectionHandler = (message: IMessageDataConnectionWithAllUsers) => {
-    connectionState.setAllUsers(message.allUsers)
-    canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
+    message.allUsers.length && connectionState.setAllUsers(message.allUsers)
+    canvasState.canvas && canvasState.pushToUndo(canvasState.canvas.toDataURL())
     const syncData: IMessageDataSync = {
       method: MessageMethods.sync,
       sessionId: connectionState.sessionId as string,
@@ -100,38 +99,28 @@ const Canvas = observer(() => {
   }
 
   const closeHandler = (message: IMessageDataCloseWithAllUsers) => {
-    connectionState.setAllUsers(message.allUsers)
+    message.allUsers.length && connectionState.setAllUsers(message.allUsers)
   }
 
   const syncHandler = (message: IMessageDataSync) => {
-    // image synchronization processing on canvas
     if (
       canvasState.undoList !== message.undoList ||
       canvasState.redoList !== message.redoList
     ) {
       canvasState.setUndoList(message.undoList)
       canvasState.setRedoList(message.redoList)
-      const canvas: HTMLCanvasElement | null = canvasState.canvas
-      if (canvas) {
-        const ctx: CanvasRenderingContext2D = canvas.getContext(
-          '2d'
-        ) as CanvasRenderingContext2D
-        const img: CanvasImageSource = new Image()
-        img.src = canvasState.undoList.pop() as string
-        img.onload = () => {
-          if (canvas.width && canvas.height) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-          }
-        }
-      }
+      if (canvasState.canvas && canvasState.undoList.length)
+        drawImageOnCanvas(
+          canvasState.canvas,
+          canvasState.undoList.pop() as string
+        )
     }
   }
 
   const drawHandler = (message: IMessageDataDraw) => {
-    if (canvasRef.current) {
+    if (canvasState.canvas) {
       const figure = message.figure
-      const ctx = canvasRef.current.getContext('2d')
+      const ctx = canvasState.canvas.getContext('2d')
       if (ctx) {
         switch (figure.type) {
           case Tools.brush:
@@ -198,13 +187,7 @@ const Canvas = observer(() => {
   useEffect(processWebSocketConnection)
 
   useEffect(() => {
-    const handleTabClosing = () => {
-      const closeData: IMessageDataClose = {
-        sessionId: connectionState.sessionId as string,
-        userId: connectionState.userId,
-        method: MessageMethods.close
-      }
-      connectionState.socket?.send(JSON.stringify(closeData))
+    const closeWebSocketConnection = () => {
       connectionState.socket?.close()
     }
 
@@ -214,15 +197,15 @@ const Canvas = observer(() => {
     }
 
     window.addEventListener('beforeunload', alertUser)
-    window.addEventListener('unload', handleTabClosing)
+    window.addEventListener('unload', closeWebSocketConnection)
     return () => {
       window.removeEventListener('beforeunload', alertUser)
-      window.removeEventListener('unload', handleTabClosing)
+      window.removeEventListener('unload', closeWebSocketConnection)
     }
   })
 
   const mouseDownHandler = (): void => {
-    canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
+    canvasState.canvas && canvasState.pushToUndo(canvasState.canvas.toDataURL())
     const data: IMessageDataActions = {
       sessionId: connectionState.sessionId as string,
       userId: connectionState.userId,

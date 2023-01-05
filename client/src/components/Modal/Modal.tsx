@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import classes from './Modal.module.css'
 import { observer } from 'mobx-react-lite'
 import { IModalProps } from './Modal.types'
-import connectionState from '../../store/connectionState'
+import connectionState from '../../store/connectionState/connectionState'
 
 const Modal: FC<IModalProps> = observer(({ show, setShow }) => {
   const [value, setValue] = useState<string>('')

@@ -1,4 +1,4 @@
-import connectionState from '../../../store/connectionState'
+import connectionState from '../../../store/connectionState/connectionState'
 import { DefaultValues } from '../../../types/DefaultValues.types'
 import {
   IMessageDataDraw,

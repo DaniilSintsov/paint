@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import connectionState from '../../store/connectionState'
+import connectionState from '../../store/connectionState/connectionState'
 import User from '../User/User'
 
 const UserList = observer(() => {
-  const lenOfRandomUserId: number = 18
+  const lenOfRandomUserId: number = 18 // given the characters "0" and "."
 
   return (
     <div className="flex gap-[var(--bar-indent)]">

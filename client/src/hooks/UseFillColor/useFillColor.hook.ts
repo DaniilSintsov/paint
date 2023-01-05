@@ -1,7 +1,7 @@
-import {useState} from 'react'
-import {Storage} from '../../services/Storage/Storage.service'
-import {StorageKeys} from '../../services/Storage/Storage.types'
-import toolState from '../../store/toolState'
+import { useState } from 'react'
+import { Storage } from '../../services/Storage/Storage.service'
+import { StorageKeys } from '../../services/Storage/Storage.types'
+import toolState from '../../store/toolState/toolState'
 
 export default function useFillColor(initialValue: string) {
   const [color, setColor] = useState<string>(initialValue)
@@ -12,5 +12,5 @@ export default function useFillColor(initialValue: string) {
     setColor(e.target.value)
   }
 
-  return {color, changeColor}
+  return { color, changeColor }
 }

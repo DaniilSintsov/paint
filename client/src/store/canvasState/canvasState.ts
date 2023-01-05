@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { drawImageOnCanvas } from '../../utils/helpers/drawImageOnCanvas.helper'
 
 interface ICanvasState {
   canvas: HTMLCanvasElement | null
@@ -42,24 +43,12 @@ class CanvasState implements ICanvasState {
     this.undoList.push(data)
   }
 
-  private drawImage(dataUrl: string): void {
-    const ctx = this.canvas?.getContext('2d')
-    const img: CanvasImageSource = new Image()
-    img.src = dataUrl
-    img.onload = () => {
-      if (this.canvas?.width && this.canvas.height) {
-        ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        ctx?.drawImage(img, 0, 0, this.canvas.width, this.canvas.height)
-      }
-    }
-  }
-
   undo(): void {
     const ctx = this.canvas?.getContext('2d')
     if (this.undoList.length > 0) {
       const dataUrl: string = this.undoList.pop() as string
       this.canvas && this.pushToRedo(this.canvas?.toDataURL())
-      this.drawImage(dataUrl)
+      drawImageOnCanvas(this.canvas as HTMLCanvasElement, dataUrl)
     } else {
       if (this.canvas?.width && this.canvas.height) {
         ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -71,7 +60,7 @@ class CanvasState implements ICanvasState {
     if (this.redoList.length > 0) {
       const dataUrl: string = this.redoList.pop() as string
       this.canvas && this.pushToUndo(this.canvas.toDataURL())
-      this.drawImage(dataUrl)
+      drawImageOnCanvas(this.canvas as HTMLCanvasElement, dataUrl)
     }
   }
 }

@@ -33,11 +33,8 @@ export interface IMessageDataDraw extends IMessageData {
   figure: Figure
 }
 
-export interface IMessageDataClose extends IMessageData {
+export interface IMessageDataCloseWithAllUsers extends IMessageData {
   method: MessageMethods.close
-}
-
-export interface IMessageDataCloseWithAllUsers extends IMessageDataClose {
   allUsers: string[]
 }
 

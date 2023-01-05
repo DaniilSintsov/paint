@@ -7,7 +7,7 @@ import {
 import { DefaultValues } from '../../../types/DefaultValues.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
-import connectionState from '../../../store/connectionState'
+import connectionState from '../../../store/connectionState/connectionState'
 
 interface IBrush extends ITool {
   coords: [number, number][]

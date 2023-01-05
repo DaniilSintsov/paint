@@ -1,8 +1,8 @@
-import { WebSocket } from 'ws'
+import { WebSocket } from 'ws';
 
 export interface IExtWebSocket extends WebSocket {
-  sessionId: string
-  userId: string
+  sessionId: string;
+  userId: string;
 }
 
 export enum MessageMethods {
@@ -14,35 +14,35 @@ export enum MessageMethods {
 }
 
 interface IMessageData {
-  sessionId: string
-  userId: string
+  sessionId: string;
+  userId: string;
 }
 
 export interface IMessageDataConnection extends IMessageData {
-  method: MessageMethods.connection
+  method: MessageMethods.connection;
 }
 
 export interface IMessageDataConnectionWithAllUsers
   extends IMessageDataConnection {
-  allUsers: string[]
+  allUsers: string[];
 }
 
 export interface IMessageDataClose extends IMessageData {
-  method: MessageMethods.close
+  method: MessageMethods.close;
 }
 
 export interface IMessageDataCloseWithAllUsers extends IMessageDataClose {
-  allUsers: string[]
+  allUsers: string[];
 }
 
 export interface IMessageDataDraw extends IMessageData {
-  method: MessageMethods.draw
+  method: MessageMethods.draw;
 }
 
 export interface IMessageDataActions extends IMessageData {
-  method: MessageMethods.actions
+  method: MessageMethods.actions;
 }
 
 export interface IMessageDataSync extends IMessageData {
-  method: MessageMethods.sync
+  method: MessageMethods.sync;
 }

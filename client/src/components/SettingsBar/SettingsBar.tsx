@@ -1,6 +1,6 @@
 import React from 'react'
 import BarContainer from '../BarContainer/BarContainer'
-import toolState from '../../store/toolState'
+import toolState from '../../store/toolState/toolState'
 import BarPalette from '../BarPalette/BarPalette'
 import { Storage } from '../../services/Storage/Storage.service'
 import { StorageKeys } from '../../services/Storage/Storage.types'

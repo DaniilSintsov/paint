@@ -7,7 +7,7 @@ import {
   IMessageDataDraw,
   MessageMethods
 } from '../../../types/WebSocket.types'
-import connectionState from '../../../store/connectionState'
+import connectionState from '../../../store/connectionState/connectionState'
 
 export default class Eraser extends BrushParent {
   name: string = Tools.eraser

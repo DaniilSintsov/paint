@@ -14,7 +14,7 @@ function App() {
           path="*"
           element={
             <Navigate
-              to={`f${(+new Date()).toString(16)}`}
+              to={`f${(+new Date()).toString(16)}`} // this is done so that session IDs are unique
               replace
             />
           }

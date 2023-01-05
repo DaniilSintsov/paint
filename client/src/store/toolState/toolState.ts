@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { ITool } from '../services/tools/Tool/Tool'
+import { ITool } from '../../services/tools/Tool/Tool'
 
 interface IToolState {
   tool: ITool | null

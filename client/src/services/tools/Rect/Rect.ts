@@ -7,7 +7,7 @@ import {
 } from '../../../types/WebSocket.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
-import connectionState from '../../../store/connectionState'
+import connectionState from '../../../store/connectionState/connectionState'
 
 interface IRect extends ITool {
   draw: (x: number, y: number, w: number, h: number) => void

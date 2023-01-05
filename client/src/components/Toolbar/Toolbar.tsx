@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react'
 import BarContainer from '../BarContainer/BarContainer'
 import Brush from '../../services/tools/Brush/Brush'
 import BarButton from '../BarButton/BarButton'
-import toolState from '../../store/toolState'
+import toolState from '../../store/toolState/toolState'
 import brushImg from '../../assets/img/tools/brush.png'
 import circleImg from '../../assets/img/tools/circle.png'
 import eraserImg from '../../assets/img/tools/eraser.png'
@@ -11,7 +11,7 @@ import rectImg from '../../assets/img/tools/rect.png'
 import undoImg from '../../assets/img/manage/undo.png'
 import redoImg from '../../assets/img/manage/redo.png'
 import saveImg from '../../assets/img/manage/save.png'
-import canvasState from '../../store/canvasState'
+import canvasState from '../../store/canvasState/canvasState'
 import { ITool } from '../../services/tools/Tool/Tool'
 import Rect from '../../services/tools/Rect/Rect'
 import Circle from '../../services/tools/Circle/Circle'
@@ -26,7 +26,7 @@ import {
   MessageActionsMethodType,
   MessageMethods
 } from '../../types/WebSocket.types'
-import connectionState from '../../store/connectionState'
+import connectionState from '../../store/connectionState/connectionState'
 
 const Toolbar = () => {
   type Constructable<T = any> = new (...args: any[]) => T
@@ -58,24 +58,14 @@ const Toolbar = () => {
     []
   )
 
-  const undoHandler = (): void => {
+  const undoAndRedoActionsHandler = (
+    action: MessageActionsMethodType
+  ): void => {
     const data: IMessageDataActions = {
       method: MessageMethods.actions,
       sessionId: connectionState.sessionId as string,
       userId: connectionState.userId,
-      action: MessageActionsMethodType.undo,
-      undoList: canvasState.undoList,
-      redoList: canvasState.redoList
-    }
-    connectionState.socket?.send(JSON.stringify(data))
-  }
-
-  const redoHandler = (): void => {
-    const data: IMessageDataActions = {
-      method: MessageMethods.actions,
-      sessionId: connectionState.sessionId as string,
-      userId: connectionState.userId,
-      action: MessageActionsMethodType.redo,
+      action: action,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
     }
@@ -123,13 +113,17 @@ const Toolbar = () => {
       <div className="flex gap-x-[var(--bar-indent)]">
         <BarButton
           tipAlign="right"
-          onClick={undoHandler}
+          onClick={() =>
+            undoAndRedoActionsHandler(MessageActionsMethodType.undo)
+          }
           image={undoImg}
           description="Назад"
         />
         <BarButton
           tipAlign="right"
-          onClick={redoHandler}
+          onClick={() =>
+            undoAndRedoActionsHandler(MessageActionsMethodType.redo)
+          }
           image={redoImg}
           description="Вперед"
         />
