@@ -61,7 +61,8 @@ const Toolbar = () => {
   const undoHandler = (): void => {
     const data: IMessageDataActions = {
       method: MessageMethods.actions,
-      id: connectionState.sessionId as string,
+      sessionId: connectionState.sessionId as string,
+      userId: connectionState.userId,
       action: MessageActionsMethodType.undo,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
@@ -72,7 +73,8 @@ const Toolbar = () => {
   const redoHandler = (): void => {
     const data: IMessageDataActions = {
       method: MessageMethods.actions,
-      id: connectionState.sessionId as string,
+      sessionId: connectionState.sessionId as string,
+      userId: connectionState.userId,
       action: MessageActionsMethodType.redo,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList

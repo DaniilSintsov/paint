@@ -1,12 +1,15 @@
 import {
   IExtWebSocket,
   IMessageDataActions,
+  IMessageDataClose,
+  IMessageDataCloseWithAllUsers,
   IMessageDataConnection,
+  IMessageDataConnectionWithAllUsers,
   IMessageDataDraw,
   IMessageDataSync,
   MessageMethods
 } from './types/WebSocket.types.js'
-import express, { Request } from 'express'
+import express from 'express'
 import expressWs from 'express-ws'
 import { MessageEvent, WebSocket } from 'ws'
 
@@ -17,11 +20,12 @@ const { app } = wsServer
 
 const PORT = process.env.PORT || 5000
 
-app.ws('/', (ws: WebSocket, req: Request): void => {
+app.ws('/', (ws: WebSocket): void => {
   ws.onmessage = (msg: MessageEvent) => {
     const message:
       | IMessageDataConnection
       | IMessageDataSync
+      | IMessageDataClose
       | IMessageDataDraw
       | IMessageDataActions = JSON.parse(msg.data as string)
     switch (message.method) {
@@ -29,11 +33,16 @@ app.ws('/', (ws: WebSocket, req: Request): void => {
         connectionHandler(ws as IExtWebSocket, message)
         break
       case MessageMethods.sync:
-        broadcastConnection(ws as IExtWebSocket, message)
+        broadcast(message)
+        break
       case MessageMethods.draw:
-        broadcastConnection(ws as IExtWebSocket, message)
+        broadcast(message)
+        break
       case MessageMethods.actions:
-        broadcastConnection(ws as IExtWebSocket, message)
+        broadcast(message)
+        break
+      case MessageMethods.close:
+        closeHandler(message)
     }
   }
 })
@@ -44,22 +53,47 @@ function connectionHandler(
   ws: IExtWebSocket,
   message: IMessageDataConnection
 ): void {
-  ws.id = message.id
-  broadcastConnection(ws, message)
+  ws.sessionId = message.sessionId
+  ws.userId = message.userId
+  const messageWithAllUsers: IMessageDataConnectionWithAllUsers = {
+    ...message,
+    allUsers: getAllUsers(message)
+  }
+  broadcast(messageWithAllUsers)
 }
 
-function broadcastConnection(
-  ws: IExtWebSocket,
+function closeHandler(message: IMessageDataClose): void {
+  const messageWithAllUsers: IMessageDataCloseWithAllUsers = {
+    ...message,
+    allUsers: getAllUsers(message).filter(msg => msg !== message.userId)
+  }
+  broadcast(messageWithAllUsers)
+}
+
+function broadcast(
   message:
-    | IMessageDataConnection
+    | IMessageDataConnectionWithAllUsers
+    | IMessageDataClose
     | IMessageDataDraw
     | IMessageDataActions
     | IMessageDataSync
 ): void {
-  aWss.clients.forEach(
-    (client: WebSocket, _: WebSocket, set: Set<WebSocket>): void => {
-      if ((client as IExtWebSocket).id === message.id)
-        (client as IExtWebSocket).send(JSON.stringify(message))
+  Array.from(aWss.clients).forEach((client: WebSocket): void => {
+    if ((client as IExtWebSocket).sessionId === message.sessionId) {
+      client.send(JSON.stringify(message))
     }
-  )
+  })
+}
+
+function getAllUsers(
+  message:
+    | IMessageDataConnection
+    | IMessageDataClose
+    | IMessageDataDraw
+    | IMessageDataActions
+    | IMessageDataSync
+): string[] {
+  return Array.from(aWss.clients)
+    .filter(client => (client as IExtWebSocket).sessionId === message.sessionId)
+    .map(client => (client as IExtWebSocket).userId)
 }

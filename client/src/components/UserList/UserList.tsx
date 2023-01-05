@@ -9,7 +9,7 @@ const UserList = observer(() => {
   return (
     <div className="flex gap-[var(--bar-indent)]">
       {connectionState.allUsers
-        .filter(user => user !== connectionState.username)
+        .filter(user => user !== connectionState.userId)
         .map(user => (
           <User
             key={user}

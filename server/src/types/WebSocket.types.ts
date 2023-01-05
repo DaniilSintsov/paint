@@ -1,22 +1,38 @@
 import { WebSocket } from 'ws'
 
 export interface IExtWebSocket extends WebSocket {
-  id: string
+  sessionId: string
+  userId: string
 }
 
 export enum MessageMethods {
   connection = 'connection',
   draw = 'draw',
   actions = 'actions',
-  sync = 'sync'
+  sync = 'sync',
+  close = 'close'
 }
 
 interface IMessageData {
-  id: string
+  sessionId: string
+  userId: string
 }
 
 export interface IMessageDataConnection extends IMessageData {
   method: MessageMethods.connection
+}
+
+export interface IMessageDataConnectionWithAllUsers
+  extends IMessageDataConnection {
+  allUsers: string[]
+}
+
+export interface IMessageDataClose extends IMessageData {
+  method: MessageMethods.close
+}
+
+export interface IMessageDataCloseWithAllUsers extends IMessageDataClose {
+  allUsers: string[]
 }
 
 export interface IMessageDataDraw extends IMessageData {

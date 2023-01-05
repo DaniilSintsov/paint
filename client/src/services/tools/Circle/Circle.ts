@@ -1,3 +1,4 @@
+import connectionState from '../../../store/connectionState'
 import { DefaultValues } from '../../../types/DefaultValues.types'
 import {
   IMessageDataDraw,
@@ -32,7 +33,8 @@ export default class Circle extends Tool implements ICircle {
     this.mouseDown = false
     const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.circle,
         x: this.startX as number,
@@ -47,7 +49,8 @@ export default class Circle extends Tool implements ICircle {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }
@@ -64,7 +67,8 @@ export default class Circle extends Tool implements ICircle {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }

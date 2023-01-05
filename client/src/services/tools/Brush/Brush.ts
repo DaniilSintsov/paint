@@ -7,6 +7,7 @@ import {
 import { DefaultValues } from '../../../types/DefaultValues.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
+import connectionState from '../../../store/connectionState'
 
 interface IBrush extends ITool {
   coords: [number, number][]
@@ -35,7 +36,8 @@ export class BrushParent extends Tool implements IBrush {
     )
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }
@@ -70,7 +72,8 @@ export default class Brush extends BrushParent implements IBrush {
     this.mouseDown = false
     const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.brush,
         coords: this.coords,
@@ -83,7 +86,8 @@ export default class Brush extends BrushParent implements IBrush {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }

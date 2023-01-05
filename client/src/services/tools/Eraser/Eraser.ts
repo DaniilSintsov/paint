@@ -7,6 +7,7 @@ import {
   IMessageDataDraw,
   MessageMethods
 } from '../../../types/WebSocket.types'
+import connectionState from '../../../store/connectionState'
 
 export default class Eraser extends BrushParent {
   name: string = Tools.eraser
@@ -20,7 +21,8 @@ export default class Eraser extends BrushParent {
     this.mouseDown = false
     const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.eraser,
         coords: this.coords,
@@ -32,7 +34,8 @@ export default class Eraser extends BrushParent {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }

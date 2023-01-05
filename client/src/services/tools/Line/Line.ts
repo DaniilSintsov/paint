@@ -1,3 +1,4 @@
+import connectionState from '../../../store/connectionState'
 import { DefaultValues } from '../../../types/DefaultValues.types'
 import {
   IMessageDataDraw,
@@ -36,7 +37,8 @@ export default class Line extends Tool implements ILine {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }
@@ -48,7 +50,8 @@ export default class Line extends Tool implements ILine {
     this.mouseDown = false
     const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.line,
         x1: this.startX as number,
@@ -63,7 +66,8 @@ export default class Line extends Tool implements ILine {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }

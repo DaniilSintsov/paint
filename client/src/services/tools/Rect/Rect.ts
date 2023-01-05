@@ -7,6 +7,7 @@ import {
 } from '../../../types/WebSocket.types'
 import { Storage } from '../../Storage/Storage.service'
 import { StorageKeys } from '../../Storage/Storage.types'
+import connectionState from '../../../store/connectionState'
 
 interface IRect extends ITool {
   draw: (x: number, y: number, w: number, h: number) => void
@@ -34,7 +35,8 @@ export default class Rect extends Tool implements IRect {
     this.mouseDown = false
     const drawData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.rect,
         x: this.startX as number,
@@ -50,7 +52,8 @@ export default class Rect extends Tool implements IRect {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }
@@ -67,7 +70,8 @@ export default class Rect extends Tool implements IRect {
 
     const clearPathData: IMessageDataDraw = {
       method: MessageMethods.draw,
-      id: this.id as string,
+      sessionId: this.id as string,
+      userId: connectionState.userId,
       figure: {
         type: Tools.none
       }

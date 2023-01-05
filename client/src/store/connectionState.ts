@@ -1,13 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 
 interface IConnectionState {
-  username: string
+  userId: string
   allUsers: string[]
   socket: WebSocket | null
   sessionId: string | null
-  setUsername: (username: string) => void
+  setUserId: (username: string) => void
   setAllUsers: (allUsers: string[]) => void
-  addUser: (user: string) => void
   setSocket: (socket: WebSocket) => void
   setSessionId: (sessionId: string) => void
 }
@@ -15,15 +14,11 @@ interface IConnectionState {
 class ConnectionState implements IConnectionState {
   socket: WebSocket | null = null
   sessionId: string | null = null
-  username: string = ''
+  userId: string = ''
   allUsers: string[] = []
 
   constructor() {
     makeAutoObservable(this)
-  }
-
-  addUser(user: string): void {
-    this.allUsers.push(user)
   }
 
   setAllUsers(allUsers: string[]): void {
@@ -38,8 +33,8 @@ class ConnectionState implements IConnectionState {
     this.sessionId = sessionId
   }
 
-  setUsername(username: string) {
-    this.username = username
+  setUserId(username: string) {
+    this.userId = username
   }
 }
 

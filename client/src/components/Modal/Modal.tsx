@@ -9,10 +9,10 @@ const Modal: FC<IModalProps> = observer(({ show, setShow }) => {
 
   const loginHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
-    const username = value.trim()
+    const username = value.replaceAll(' ', '_')
     if (username) {
       const lenOfFractionalPart: number = 16
-      connectionState.setUsername(
+      connectionState.setUserId(
         username + Math.random().toFixed(lenOfFractionalPart)
       ) // this is done so that all usernames are unique
       setShow(false)

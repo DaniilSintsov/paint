@@ -11,7 +11,10 @@ import Modal from '../Modal/Modal'
 import { useParams } from 'react-router-dom'
 import {
   IMessageDataActions,
+  IMessageDataClose,
+  IMessageDataCloseWithAllUsers,
   IMessageDataConnection,
+  IMessageDataConnectionWithAllUsers,
   IMessageDataDraw,
   IMessageDataSync,
   MessageActionsMethodType,
@@ -43,12 +46,12 @@ const Canvas = observer(() => {
 
   const onOpenWebSocketHandler = (socket: WebSocket): void => {
     socket.onopen = () => {
-      if (params.id && connectionState.username && canvasRef.current) {
+      if (params.id && connectionState.userId && canvasRef.current) {
         connectionState.setSessionId(params.id)
         toolState.setTool(new Brush(canvasRef.current, socket, params.id))
         const postData: IMessageDataConnection = {
-          id: params.id,
-          username: connectionState.username,
+          sessionId: params.id,
+          userId: connectionState.userId,
           method: MessageMethods.connection
         }
         socket.send(JSON.stringify(postData))
@@ -59,8 +62,9 @@ const Canvas = observer(() => {
   const onMessageWebSocketHandler = (socket: WebSocket): void => {
     socket.onmessage = (msg: MessageEvent) => {
       const message:
-        | IMessageDataConnection
+        | IMessageDataConnectionWithAllUsers
         | IMessageDataSync
+        | IMessageDataCloseWithAllUsers
         | IMessageDataDraw
         | IMessageDataActions = JSON.parse(msg.data)
       switch (message.method) {
@@ -76,31 +80,30 @@ const Canvas = observer(() => {
         case MessageMethods.actions:
           actionsHandler(message)
           break
+        case MessageMethods.close:
+          closeHandler(message)
       }
     }
   }
 
-  const connectionHandler = (message: IMessageDataConnection) => {
-    connectionState.addUser(message.username)
+  const connectionHandler = (message: IMessageDataConnectionWithAllUsers) => {
+    connectionState.setAllUsers(message.allUsers)
     canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
     const syncData: IMessageDataSync = {
       method: MessageMethods.sync,
-      id: connectionState.sessionId as string,
-      allUsers: connectionState.allUsers,
+      sessionId: connectionState.sessionId as string,
+      userId: connectionState.userId,
       undoList: canvasState.undoList,
       redoList: canvasState.redoList
     }
     connectionState.socket?.send(JSON.stringify(syncData))
   }
 
-  const syncHandler = (message: IMessageDataSync) => {
-    // processing synchronization of user data
-    if (connectionState.allUsers.length < message.allUsers.length) {
-      connectionState.setAllUsers(message.allUsers)
-    } else {
-      connectionState.setAllUsers(connectionState.allUsers)
-    }
+  const closeHandler = (message: IMessageDataCloseWithAllUsers) => {
+    connectionState.setAllUsers(message.allUsers)
+  }
 
+  const syncHandler = (message: IMessageDataSync) => {
     // image synchronization processing on canvas
     if (
       canvasState.undoList !== message.undoList ||
@@ -194,10 +197,35 @@ const Canvas = observer(() => {
 
   useEffect(processWebSocketConnection)
 
+  useEffect(() => {
+    const handleTabClosing = () => {
+      const closeData: IMessageDataClose = {
+        sessionId: connectionState.sessionId as string,
+        userId: connectionState.userId,
+        method: MessageMethods.close
+      }
+      connectionState.socket?.send(JSON.stringify(closeData))
+      connectionState.socket?.close()
+    }
+
+    const alertUser = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+
+    window.addEventListener('beforeunload', alertUser)
+    window.addEventListener('unload', handleTabClosing)
+    return () => {
+      window.removeEventListener('beforeunload', alertUser)
+      window.removeEventListener('unload', handleTabClosing)
+    }
+  })
+
   const mouseDownHandler = (): void => {
     canvasRef.current && canvasState.pushToUndo(canvasRef.current.toDataURL())
     const data: IMessageDataActions = {
-      id: connectionState.sessionId as string,
+      sessionId: connectionState.sessionId as string,
+      userId: connectionState.userId,
       method: MessageMethods.actions,
       action: MessageActionsMethodType.none,
       undoList: canvasState.undoList,

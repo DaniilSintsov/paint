@@ -4,7 +4,8 @@ export enum MessageMethods {
   connection = 'connection',
   sync = 'sync',
   draw = 'draw',
-  actions = 'actions'
+  actions = 'actions',
+  close = 'close'
 }
 
 export enum MessageActionsMethodType {
@@ -14,17 +15,30 @@ export enum MessageActionsMethodType {
 }
 
 interface IMessageData {
-  id: string
+  sessionId: string
+  userId: string
 }
 
 export interface IMessageDataConnection extends IMessageData {
   method: MessageMethods.connection
-  username: string
+}
+
+export interface IMessageDataConnectionWithAllUsers
+  extends IMessageDataConnection {
+  allUsers: string[]
 }
 
 export interface IMessageDataDraw extends IMessageData {
   method: MessageMethods.draw
   figure: Figure
+}
+
+export interface IMessageDataClose extends IMessageData {
+  method: MessageMethods.close
+}
+
+export interface IMessageDataCloseWithAllUsers extends IMessageDataClose {
+  allUsers: string[]
 }
 
 export interface IMessageDataActions extends IMessageData {
@@ -36,7 +50,6 @@ export interface IMessageDataActions extends IMessageData {
 
 export interface IMessageDataSync extends IMessageData {
   method: MessageMethods.sync
-  allUsers: string[]
   undoList: string[]
   redoList: string[]
 }
