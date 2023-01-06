@@ -72,6 +72,16 @@ const Toolbar = () => {
     connectionState.socket?.send(JSON.stringify(data))
   }
 
+  const downloadHandler = () => {
+    const dataUrl: string = canvasState.canvas?.toDataURL() as string
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = connectionState.sessionId + '.jpg'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   useEffect(() => {
     barButtonHandler(Brush)
   }, [barButtonHandler])
@@ -129,7 +139,7 @@ const Toolbar = () => {
         />
         <BarButton
           tipAlign="right"
-          onClick={() => barButtonHandler(Brush)}
+          onClick={downloadHandler}
           image={saveImg}
           description="Сохранить"
         />

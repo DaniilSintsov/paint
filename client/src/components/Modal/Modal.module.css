@@ -4,7 +4,7 @@
   z-index: 40;
   overflow-x: hidden;
   position: fixed;
-  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
   padding: 30px;
@@ -22,32 +22,49 @@
 }
 
 .modalContent {
-  padding: 20px;
+  padding: var(--bar-indent);
   max-width: 300px;
   border: var(--border-weight) solid var(--border-color);
-  background-color: var(--bgc);
+  border-radius: var(--border-radius);
+  background-color: white;
 }
 
-.modalInput {
+.modalInput,
+.modalInputError {
   width: 100%;
-  padding: 10px;
+  padding: var(--bar-indent);
   outline: none;
   border: var(--border-weight) solid var(--border-color);
-  margin-bottom: 20px;
+  border-radius: var(--border-radius);
+  background-color: var(--bgc);
 }
 
 .modalInput:focus {
   border: var(--border-weight) solid var(--border-focus-color);
 }
 
+.modalInputError:focus {
+  border: var(--border-weight) solid red;
+}
+
+.modalInput::placeholder,
+.modalInputError::placeholder {
+  color: var(--light-gray);
+}
+
+.modalInputWrapper {
+  margin-bottom: var(--bar-indent);
+}
+
 .modalButton {
   width: 100%;
-  padding: 10px;
+  padding: var(--bar-indent);
   text-transform: uppercase;
-  font-weight: 500;
   outline: none;
   transition: 0.3s;
   border: var(--border-weight) solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bgc);
 }
 
 .modalButton:hover {

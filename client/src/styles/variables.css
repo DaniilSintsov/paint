@@ -1,9 +1,11 @@
 :root {
-  --bar-indent: 10px;
-  --bgc: #fafafa;
+  --bar-indent: 15px;
+  --bgc: #edeef0;
   --deep-gray: #494949;
   --bar-button-size: 30px;
-  --border-weight: 2px;
-  --border-color: #000;
+  --border-weight: 1px;
+  --border-radius: 7px;
+  --border-color: #dadce0;
+  --light-gray: #babbbd;
   --border-focus-color: #1a73e8;
 }

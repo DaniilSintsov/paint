@@ -23,16 +23,20 @@ const User: FC<IUserProps> = ({ description }) => {
   return (
     <div
       className="tip tip-align-right"
-      data-description={description}
-      css={css`
-        height: var(--bar-button-size);
-        width: var(--bar-button-size);
-        border: var(--border-weight) solid ${getRandomColor(colors)};
-      `}>
-      <img
-        src={avatarImg}
-        alt="avatar"
-      />
+      data-description={description}>
+      <div
+        css={css`
+          overflow: hidden;
+          height: var(--bar-button-size);
+          width: var(--bar-button-size);
+          border: var(--border-weight) solid ${getRandomColor(colors)};
+          border-radius: var(--border-radius);
+        `}>
+        <img
+          src={avatarImg}
+          alt="avatar"
+        />
+      </div>
     </div>
   )
 }

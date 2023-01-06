@@ -9,18 +9,29 @@ const BarPalette: FC<IBarPaletteProps> = ({ onChange, description, value }) => {
     <div
       className="tip tip-align-left"
       data-description={description}>
-      <input
-        onChange={onChange}
-        type="color"
-        value={value}
+      <div
         css={css`
-          border: var(--border-weight) solid var(--border-color);
-          &:focus {
-            border: var(--border-weight) solid var(--border-focus-color);
-          }
-        `}
-        className="h-[var(--bar-button-size)] w-[var(--bar-button-size)] border-[var(--border-weight)] cursor-pointer"
-      />
+          height: var(--bar-button-size);
+          width: var(--bar-button-size);
+          overflow: hidden;
+          border-radius: var(--border-radius);
+        `}>
+        <input
+          onChange={onChange}
+          type="color"
+          value={value}
+          css={css`
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+            border: var(--border-weight) solid var(--border-color);
+            border-radius: var(--border-radius);
+            &:focus {
+              border: var(--border-weight) solid var(--border-focus-color);
+            }
+          `}
+        />
+      </div>
     </div>
   )
 }

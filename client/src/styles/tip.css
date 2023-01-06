@@ -13,7 +13,8 @@
   color: white;
   font-size: 13px;
   background-color: var(--deep-gray);
-  padding: 0 2px;
+  padding: 0 4px;
+  border-radius: 4px;
   height: 20px;
   display: inline-flex;
   align-items: center;

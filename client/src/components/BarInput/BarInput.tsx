@@ -28,6 +28,7 @@ const BarInput: FC<IBarInputProps> = ({
         onChange={e => inputHandler(e)}
         css={css`
           border: var(--border-weight) solid var(--border-color);
+          border-radius: var(--border-radius);
           outline: none;
           height: var(--bar-button-size);
           width: 60px;

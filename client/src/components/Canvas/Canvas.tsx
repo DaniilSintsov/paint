@@ -87,15 +87,18 @@ const Canvas = observer(() => {
 
   const connectionHandler = (message: IMessageDataConnectionWithAllUsers) => {
     message.allUsers.length && connectionState.setAllUsers(message.allUsers)
-    canvasState.canvas && canvasState.pushToUndo(canvasState.canvas.toDataURL())
-    const syncData: IMessageDataSync = {
-      method: MessageMethods.sync,
-      sessionId: connectionState.sessionId as string,
-      userId: connectionState.userId,
-      undoList: canvasState.undoList,
-      redoList: canvasState.redoList
+    if (canvasState.undoList.length) {
+      canvasState.canvas &&
+        canvasState.pushToUndo(canvasState.canvas.toDataURL())
+      const syncData: IMessageDataSync = {
+        method: MessageMethods.sync,
+        sessionId: connectionState.sessionId as string,
+        userId: connectionState.userId,
+        undoList: canvasState.undoList,
+        redoList: canvasState.redoList
+      }
+      connectionState.socket?.send(JSON.stringify(syncData))
     }
-    connectionState.socket?.send(JSON.stringify(syncData))
   }
 
   const closeHandler = (message: IMessageDataCloseWithAllUsers) => {
@@ -184,7 +187,9 @@ const Canvas = observer(() => {
     }
   }
 
-  useEffect(processWebSocketConnection)
+  useEffect(() => {
+    processWebSocketConnection()
+  })
 
   useEffect(() => {
     const closeWebSocketConnection = () => {
@@ -232,6 +237,7 @@ const Canvas = observer(() => {
           css={css`
             margin: 0 auto;
             border: var(--border-weight) solid var(--border-color);
+            border-radius: var(--border-radius);
             background-color: white;
           `}
         />
