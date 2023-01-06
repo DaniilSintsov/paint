@@ -25,6 +25,7 @@ import Line from '../../services/tools/Line/Line'
 import Circle from '../../services/tools/Circle/Circle'
 import connectionState from '../../store/connectionState/connectionState'
 import { drawImageOnCanvas } from '../../utils/helpers/drawImageOnCanvas.helper'
+import { DEVELOPMENT_WS_SERVER_PORT } from '../../utils/constants/launch.constants'
 
 const Canvas = observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -36,7 +37,10 @@ const Canvas = observer(() => {
   }, [])
 
   const processWebSocketConnection = (): void => {
-    const socket = new WebSocket('ws://localhost:5000')
+    const socket = new WebSocket(
+      process.env.REACT_APP_WS_SERVER_ADDRESS ??
+        `ws://localhost${DEVELOPMENT_WS_SERVER_PORT}/api`
+    )
     connectionState.setSocket(socket)
     onOpenWebSocketHandler(socket)
     onMessageWebSocketHandler(socket)

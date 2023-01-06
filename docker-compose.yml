@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  static_server:
+    container_name: static_server
+    build: ./
+    restart: always
+    ports:
+      - "80:80"
+
+  web_socket_server:
+    container_name: web_socket_server
+    build: ./webSocketServer
+    restart: always
+    ports:
+      - "8080:8080"

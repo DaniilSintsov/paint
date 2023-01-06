@@ -11,16 +11,19 @@ import {
 } from './types/WebSocket.types.js';
 import express from 'express';
 import expressWs from 'express-ws';
+import cors from 'express';
 import { MessageEvent, WebSocket } from 'ws';
+import { PORT } from './utils/constants/launch.constants.js';
+import { getAllUsers } from './utils/helpers/getAllUsers.helpers.js';
 
 const appBase: express.Application = express();
 const wsServer = expressWs(appBase);
 const aWss = wsServer.getWss();
 const { app } = wsServer;
 
-const PORT = process.env.PORT || 5000;
+app.use(cors());
 
-app.ws('/', (ws: WebSocket): void => {
+app.ws('/api', (ws: WebSocket): void => {
   ws.onmessage = (msg: MessageEvent) => {
     const message:
       | IMessageDataConnection
@@ -53,18 +56,22 @@ app.ws('/', (ws: WebSocket): void => {
     };
     const messageWithAllUsers: IMessageDataCloseWithAllUsers = {
       ...message,
-      allUsers: getAllUsers(message).filter(user => user !== message.userId)
+      allUsers: getAllUsers(aWss.clients as Set<IExtWebSocket>, message).filter(
+        user => user !== message.userId
+      )
     };
     broadcast(messageWithAllUsers);
   };
 });
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`WebSocket server has been started on port ${PORT}...`)
+);
 
 function connectionHandler(message: IMessageDataConnection): void {
   const messageWithAllUsers: IMessageDataConnectionWithAllUsers = {
     ...message,
-    allUsers: getAllUsers(message)
+    allUsers: getAllUsers(aWss.clients as Set<IExtWebSocket>, message)
   };
   broadcast(messageWithAllUsers);
 }
@@ -82,17 +89,4 @@ function broadcast(
       client.send(JSON.stringify(message));
     }
   });
-}
-
-function getAllUsers(
-  message:
-    | IMessageDataConnection
-    | IMessageDataClose
-    | IMessageDataDraw
-    | IMessageDataActions
-    | IMessageDataSync
-): string[] {
-  return Array.from(aWss.clients)
-    .filter(client => (client as IExtWebSocket).sessionId === message.sessionId)
-    .map(client => (client as IExtWebSocket).userId);
 }
